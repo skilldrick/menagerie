@@ -15,7 +15,7 @@ import {ctx, getCurrentTime} from 'sine/audio';
 import {connect} from 'sine/util';
 import getAudioBuffer from 'sine/ajax';
 import {createBufferSource, createDelay, createGain, createOscillator, createChannelSplitter, createChannelMerger} from 'sine/nodes';
-import {Node} from 'sine/util';
+import { MixNode, Node } from 'sine/util';
 
 // Needed for onTouchTap
 // Can go away when react 1.0 release
@@ -53,18 +53,26 @@ export const createTimeDomainAnalyser = (fftSize, interval, cb) => {
   return analyser;
 };
 
-const createLFO = (frequency, real, imag) => createOscillator({
-  frequency: frequency,
-  realCoefficients: [real],
-  imaginaryCoefficients: [imag]
-});
+class LFO extends Node {
+  constructor(frequency, gain = 1, real = 1, imag = 0) {
+    super();
+
+    const oscillatorGain = createGain(gain);
+    const oscillator = createOscillator({
+      frequency: frequency,
+      realCoefficients: [real],
+      imaginaryCoefficients: [imag]
+    });
+    connect(oscillator, oscillatorGain, this.output);
+    oscillator.start();
+  }
+}
 
 class Warper extends Node {
   constructor(lfoFrequency, amount, real, imag, letter) {
     super();
 
-    const lfo = createLFO(lfoFrequency, real, imag);
-    lfo.start();
+    const lfo = new LFO(lfoFrequency, 1, real, imag);
 
     const lfoGain = createGain(amount / 1000);
 
@@ -134,6 +142,33 @@ class StereoChorus extends Node {
   }
 }
 
+class Multiplier extends MixNode {
+  constructor(mix) {
+    super(mix);
+    const modulatorGain = createGain(1);
+    const signalGain = createGain(0);
+    connect(this.input, modulatorGain, signalGain.gain);
+
+    // Dry chain
+    connect(this.input, this.dryMix, this.output);
+    // Wet chain
+    connect(this.input, signalGain, this.wetMix, this.output);
+  }
+}
+
+class AM extends Node {
+  constructor(frequency, amount) {
+    super();
+    const modulatorGain = createGain(amount);
+    const signalGain = createGain(0);
+    this.modulator = createOscillator(frequency);
+    this.modulator.start();
+
+    connect(this.modulator, modulatorGain, signalGain.gain);
+    connect(this.input, signalGain, this.output);
+  }
+}
+
 class App extends Component {
   render() {
     return (
@@ -154,12 +189,21 @@ class App extends Component {
     }, [1, 1, 1, 1, 1]);
 
     const chorus = new StereoChorus(0.5, 5);
+    const multiplier = new Multiplier(0.4);
 
-    connect(this.synth, chorus, ctx.destination);
+    const am = new AM(2000, 1);
+    const am2 = new AM(0.2, 1);
+    const lfo = new LFO(0.1, 1000);
+    connect(lfo, am2, am.modulator.frequency);
+
+    const fxBus = createGain();
+    connect(fxBus, multiplier, chorus, am, ctx.destination);
+
+    connect(this.synth, fxBus);
 
     getAudioBuffer('cissy-strut-start.mp3').then((buffer) => {
       const source = createBufferSource(buffer);
-      connect(source, chorus);
+      connect(source, fxBus);
       source.start();
     });
   }
