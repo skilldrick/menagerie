@@ -153,19 +153,20 @@ class App extends Component {
       release: 0.1
     }, [1, 1, 1, 1, 1]);
 
-    connect(this.synth, ctx.destination);
+    const chorus = new StereoChorus(0.5, 5);
+
+    connect(this.synth, chorus, ctx.destination);
 
     getAudioBuffer('cissy-strut-start.mp3').then((buffer) => {
       const source = createBufferSource(buffer);
-      const chorus = new StereoChorus(500, 0.5);
-      connect(source, chorus, ctx.destination);
+      connect(source, chorus);
       source.start();
     });
   }
 
 
   play = () => {
-    this.synth.playNote(10, getCurrentTime(), 1, Math.random() * 10);
+    this.synth.playNote(3, getCurrentTime(), 1, Math.random() * 10);
   }
 }
 
