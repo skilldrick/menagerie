@@ -48,6 +48,10 @@ class App extends Component {
             label="Preset 2"
             onTouchTap={this.menagerie.setPreset2}
           />
+          <RaisedButton
+            label="Preset 3"
+            onTouchTap={this.menagerie.setPreset3}
+          />
         </div>
       </MuiThemeProvider>
     );

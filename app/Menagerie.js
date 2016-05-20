@@ -180,9 +180,11 @@ class FxChain extends Node {
     const lfo = new LFO(0.7, 1000);
     const am2 = new AM(0.3, 1);
 
+    // Modulate LFO with AM then use that signal to
+    // modulate main AM's modulator frequency
     connect(lfo, am2, this.fx.am.modulator.frequency);
 
-    this.connectNodes(['chorus', 'distortion', 'delay']);
+    this.connectNodes();
   }
 
   disconnectNodes() {
@@ -193,7 +195,7 @@ class FxChain extends Node {
     });
   }
 
-  connectNodes(nodeNames) {
+  connectNodes(nodeNames=[]) {
     // Disconnect all nodes so they can be re-connected
     this.disconnectNodes();
 
@@ -208,6 +210,7 @@ class FxChain extends Node {
 export default class Menagerie {
   constructor() {
     this.fxChain = new FxChain();
+    this.setPreset1();
 
     this.synth = new HarmonicSynth({
       attack: 0.01,
@@ -222,11 +225,34 @@ export default class Menagerie {
   }
 
   setPreset1 = () => {
-    this.fxChain.connectNodes(['chorus', 'multiplier', 'tremolo', 'distortion']);
+    this.fxChain.connectNodes([
+      'chorus',
+      'multiplier',
+      'tremolo',
+    ]);
   }
 
   setPreset2 = () => {
-    this.fxChain.connectNodes(['chorus', 'multiplier', 'tremolo', 'delay', 'distortion', 'am']);
+    this.fxChain.connectNodes([
+      'chorus',
+      'multiplier',
+      'tremolo',
+      'distortion',
+      'delay',
+      'compressor'
+    ]);
+  }
+
+  setPreset3 = () => {
+    this.fxChain.connectNodes([
+      'am',
+      'multiplier',
+      'chorus',
+      'tremolo',
+      'compressor',
+      'delay',
+      'distortion',
+    ]);
   }
 
   playCissy(onended) {
