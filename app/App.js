@@ -157,15 +157,31 @@ class Multiplier extends MixNode {
 }
 
 class AM extends Node {
-  constructor(frequency, amount) {
+  /*
+  * @param frequency   Frequency to modulate the amplitude
+  * @param amount      How much the amplitude modulates by
+  * @param centerGain  The center-point of the signal gain that gets
+  *                    modulated.
+  *
+  * E.g. if amount = 0.5 and centerGain = 0, the input signal will
+  * have its gain varied between -0.5 and +0.5.
+  */
+  constructor(frequency, amount, centerGain=0) {
     super();
     const modulatorGain = createGain(amount);
-    const signalGain = createGain(0);
+    const signalGain = createGain(centerGain);
     this.modulator = createOscillator(frequency);
     this.modulator.start();
 
     connect(this.modulator, modulatorGain, signalGain.gain);
     connect(this.input, signalGain, this.output);
+  }
+}
+
+// Tremolo is just AM with center gain set to 1
+class Tremolo extends AM {
+  constructor(frequency, amount) {
+    super(frequency, amount, 1);
   }
 }
 
@@ -190,14 +206,15 @@ class App extends Component {
 
     const chorus = new StereoChorus(0.5, 5);
     const multiplier = new Multiplier(0.4);
+    const tremolo = new Tremolo(5, 0.3);
 
     const am = new AM(2000, 1);
-    const am2 = new AM(0.2, 1);
-    const lfo = new LFO(0.1, 1000);
+    const am2 = new AM(0.3, 1);
+    const lfo = new LFO(0.7, 1000);
     connect(lfo, am2, am.modulator.frequency);
 
     const fxBus = createGain();
-    connect(fxBus, multiplier, chorus, am, ctx.destination);
+    connect(fxBus, multiplier, chorus, am, tremolo, ctx.destination);
 
     connect(this.synth, fxBus);
 
@@ -210,7 +227,7 @@ class App extends Component {
 
 
   play = () => {
-    this.synth.playNote(3, getCurrentTime(), 1, Math.random() * 10);
+    this.synth.playNote(3, getCurrentTime(), 2, Math.random() * 10);
   }
 }
 
