@@ -166,13 +166,8 @@ class Tremolo extends AM {
 class FxChain extends Node {
   constructor() {
     super();
-    this.connectNodes(['chorus', 'distortion', 'delay']);
-  }
 
-  connectNodes(nodeNames) {
-    this.input.disconnect(); // disconnect the old chain
-
-    const fx = {
+    this.fx = {
       chorus: new StereoChorus(0.5, 5),
       multiplier: new Multiplier(0.4),
       tremolo: new Tremolo(5, 0.3),
@@ -185,11 +180,26 @@ class FxChain extends Node {
     const lfo = new LFO(0.7, 1000);
     const am2 = new AM(0.3, 1);
 
-    connect(lfo, am2, fx.am.modulator.frequency);
+    connect(lfo, am2, this.fx.am.modulator.frequency);
+
+    this.connectNodes(['chorus', 'distortion', 'delay']);
+  }
+
+  disconnectNodes() {
+    this.input.disconnect();
+
+    Object.keys(this.fx).forEach(key => {
+      this.fx[key].disconnect();
+    });
+  }
+
+  connectNodes(nodeNames) {
+    // Disconnect all nodes so they can be re-connected
+    this.disconnectNodes();
 
     connect(
       this.input,
-      ...nodeNames.map(name => fx[name]),
+      ...nodeNames.map(name => this.fx[name]),
       this.output
     );
   }

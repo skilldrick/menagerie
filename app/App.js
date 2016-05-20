@@ -40,11 +40,11 @@ class App extends Component {
             onTouchTap={this.stopCissy}
             disabled={!this.state.playingCissy}
           />
-          <FlatButton
+          <RaisedButton
             label="Preset 1"
             onTouchTap={this.menagerie.setPreset1}
           />
-          <FlatButton
+          <RaisedButton
             label="Preset 2"
             onTouchTap={this.menagerie.setPreset2}
           />
