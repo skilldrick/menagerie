@@ -127,14 +127,11 @@ class Multiplier extends MixNode {
     const signalGain = createGain(0);
     connect(this.input, modulatorGain, signalGain.gain);
 
-    // Dry chain
-    connect(this.input, this.dryMix, this.output);
-    // Wet chain
-    connect(this.input, signalGain, this.wetMix, this.output);
+    connect(this.input, signalGain, this.wetMix);
   }
 }
 
-class AM extends Node {
+class AM extends MixNode {
   /*
   * @param frequency   Frequency to modulate the amplitude
   * @param amount      How much the amplitude modulates by
@@ -145,14 +142,15 @@ class AM extends Node {
   * have its gain varied between -0.5 and +0.5.
   */
   constructor(frequency, amount, centerGain=0) {
-    super();
+    super(0.4);
     const modulatorGain = createGain(amount);
     const signalGain = createGain(centerGain);
     this.modulator = createOscillator(frequency);
     this.modulator.start();
 
     connect(this.modulator, modulatorGain, signalGain.gain);
-    connect(this.input, signalGain, this.output);
+
+    connect(this.input, signalGain, this.wetMix);
   }
 }
 
@@ -172,8 +170,8 @@ class FxChain extends Node {
       multiplier: new Multiplier(0.4),
       tremolo: new Tremolo(5, 0.3),
       distortion: new Distortion(1.5),
-      delay: new FeedbackDelay({}),
-      compressor: createDynamicsCompressor({}),
+      delay: new FeedbackDelay(),
+      compressor: createDynamicsCompressor(),
       am: new AM(2000, 1)
     };
 
@@ -207,10 +205,37 @@ class FxChain extends Node {
   }
 }
 
+class Cissy {
+  constructor(fxChain) {
+    this.cissyBuffer = getAudioBuffer('cissy-strut-start.mp3');
+    this.fxChain = fxChain;
+  }
+
+  play(onended) {
+    this.stop();
+
+    this.cissyBuffer.then(buffer => {
+      this.cissySource = createBufferSource(buffer);
+      connect(this.cissySource, this.fxChain);
+      this.cissySource.start();
+
+      if (onended) {
+        this.cissySource.onended = onended;
+      }
+    });
+  }
+
+  stop() {
+    this.cissySource && this.cissySource.stop();
+  }
+}
+
 export default class Menagerie {
   constructor() {
     this.fxChain = new FxChain();
     this.setPreset1();
+
+    this.cissy = new Cissy(this.fxChain);
 
     this.synth = new HarmonicSynth({
       attack: 0.01,
@@ -220,8 +245,6 @@ export default class Menagerie {
     }, [1, 1, 1, 1, 1]);
 
     connect(this.synth, this.fxChain, ctx.destination);
-
-    this.cissyBuffer = getAudioBuffer('cissy-strut-start.mp3');
   }
 
   setPreset1 = () => {
@@ -256,21 +279,11 @@ export default class Menagerie {
   }
 
   playCissy(onended) {
-    this.stopCissy();
-
-    this.cissyBuffer.then(buffer => {
-      this.cissySource = createBufferSource(buffer);
-      connect(this.cissySource, this.fxChain);
-      this.cissySource.start();
-
-      if (onended) {
-        this.cissySource.onended = onended;
-      }
-    });
+    this.cissy.play(onended);
   }
 
   stopCissy() {
-    this.cissySource && this.cissySource.stop();
+    this.cissy.stop();
   }
 
   playNote() {
