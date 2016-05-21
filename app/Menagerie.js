@@ -8,7 +8,7 @@ import {createBufferSource, createDelay, createDynamicsCompressor, createGain, c
 import { MixNode, Node } from 'sine/util';
 
 
-export const createTimeDomainAnalyser = (fftSize, interval, cb) => {
+const createTimeDomainAnalyser = (fftSize, interval, cb) => {
   const analyser = ctx.createAnalyser();
   analyser.fftSize = fftSize;
 
@@ -254,21 +254,31 @@ class Samples {
   }
 }
 
+// TODO: show loading spinner, only show SamplerControl after loaded
+// TODO: allow sampler to be held down for note on/off ?
+// TODO: each key should have multiple attributes (offset, length, playbackrate)
 class Samplers extends Node {
   constructor() {
     super();
 
     this.samples = new Samples();
     this.notInLove = this.createSampler('notinlove.mp3', {
-      a: 10,
-      b: 20
+      1: 0.5,   2: 2,    3: 3,      4: 3.5,
+      Q: 4.98,  W: 5.5,  E: 10.03,  R: 10.55,
+      A: 27.25, S: 30,   D: 31,     F: 31.8,
+      Z: 33.55,  X: 34.2, C: 37.1,   V: 40.61
     });
+
+    this.notInLove.then(x => window.notInLove = x);
   }
 
+
   play = (sample) => {
-    this.notInLove.then(sampler =>
-      sampler.play(sample, 0, 0.5)
-    );
+    this.notInLove.then(sampler => {
+      //sampler.play(sample, 0, 0.2, 0.8)
+      //sampler.play(sample, 0, 0.2, 1.2)
+      sampler.play(sample, 0, 0.2);
+    });
   }
 
   createSampler(fileName, offsets) {
@@ -300,7 +310,7 @@ export default class Menagerie {
     connect(this.synth, this.fxChain, ctx.destination);
   }
 
-  playSampler = (sample) => {
+  playSample = (sample) => {
     this.samplers.play(sample);
   }
 

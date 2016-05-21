@@ -10,6 +10,8 @@ import {deepOrange500} from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
+import SamplerControl from './SamplerControl';
+
 import Menagerie from './Menagerie';
 
 // Needed for onTouchTap
@@ -29,37 +31,35 @@ class App extends Component {
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <div>
-          <RaisedButton label="Play Note" onTouchTap={this.playNote} />
-          <RaisedButton
-            label="Play Cissy Strut"
-            onTouchTap={this.playCissy}
-            disabled={this.state.playingCissy}
-          />
-          <RaisedButton
-            label="Stop Cissy Strut"
-            onTouchTap={this.stopCissy}
-            disabled={!this.state.playingCissy}
-          />
-          <RaisedButton
-            label="Preset 1"
-            onTouchTap={this.menagerie.setPreset1}
-          />
-          <RaisedButton
-            label="Preset 2"
-            onTouchTap={this.menagerie.setPreset2}
-          />
-          <RaisedButton
-            label="Preset 3"
-            onTouchTap={this.menagerie.setPreset3}
-          />
-          <RaisedButton
-            label="Sample A"
-            onTouchTap={() => this.menagerie.playSampler('a')}
-          />
-          <RaisedButton
-            label="Sample B"
-            onTouchTap={() => this.menagerie.playSampler('b')}
-          />
+          <div>
+            <RaisedButton label="Play Note" onTouchTap={this.playNote} />
+            <RaisedButton
+              label="Play Cissy Strut"
+              onTouchTap={this.playCissy}
+              disabled={this.state.playingCissy}
+            />
+            <RaisedButton
+              label="Stop Cissy Strut"
+              onTouchTap={this.stopCissy}
+              disabled={!this.state.playingCissy}
+            />
+            <RaisedButton
+              label="Preset 1"
+              onTouchTap={this.menagerie.setPreset1}
+            />
+            <RaisedButton
+              label="Preset 2"
+              onTouchTap={this.menagerie.setPreset2}
+            />
+            <RaisedButton
+              label="Preset 3"
+              onTouchTap={this.menagerie.setPreset3}
+            />
+          </div>
+
+          <div>
+            <SamplerControl playSample={this.menagerie.playSample} />
+          </div>
         </div>
       </MuiThemeProvider>
     );
