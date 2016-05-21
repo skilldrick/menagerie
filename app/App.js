@@ -52,6 +52,14 @@ class App extends Component {
             label="Preset 3"
             onTouchTap={this.menagerie.setPreset3}
           />
+          <RaisedButton
+            label="Sample A"
+            onTouchTap={() => this.menagerie.playSampler('a')}
+          />
+          <RaisedButton
+            label="Sample B"
+            onTouchTap={() => this.menagerie.playSampler('b')}
+          />
         </div>
       </MuiThemeProvider>
     );

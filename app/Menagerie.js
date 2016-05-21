@@ -2,6 +2,7 @@ import {HarmonicSynth} from 'sine/synth';
 import {ctx, getCurrentTime} from 'sine/audio';
 import {Distortion, FeedbackDelay} from 'sine/fx';
 import {connect} from 'sine/util';
+import {SingleBufferSampler} from 'sine/sampler';
 import getAudioBuffer from 'sine/ajax';
 import {createBufferSource, createDelay, createDynamicsCompressor, createGain, createOscillator, createChannelSplitter, createChannelMerger} from 'sine/nodes';
 import { MixNode, Node } from 'sine/util';
@@ -207,14 +208,14 @@ class FxChain extends Node {
 
 class Cissy {
   constructor(fxChain) {
-    this.cissyBuffer = getAudioBuffer('cissy-strut-start.mp3');
+    this.bufferPromise = getAudioBuffer('cissy-strut-start.mp3');
     this.fxChain = fxChain;
   }
 
   play(onended) {
     this.stop();
 
-    this.cissyBuffer.then(buffer => {
+    this.bufferPromise.then(buffer => {
       this.cissySource = createBufferSource(buffer);
       connect(this.cissySource, this.fxChain);
       this.cissySource.start();
@@ -227,6 +228,55 @@ class Cissy {
 
   stop() {
     this.cissySource && this.cissySource.stop();
+  }
+}
+
+class Samples {
+  constructor() {
+    const fileNames = [
+      'beatit.mp3',
+      'cissy-strut-start.mp3',
+      'eileen.mp3',
+      'everybreath.mp3',
+      'notinlove.mp3',
+      'takeonme.mp3',
+    ];
+
+    this.buffers = Promise.all(fileNames.map(name =>
+      getAudioBuffer(name).then(buff => [name, buff])
+    )).then(bufferArray => this.arrayToObject(bufferArray));
+  }
+
+  arrayToObject(arr) {
+    return arr.reduce((obj, [name, value]) => {
+      return Object.assign(obj, { [name]: value });
+    }, {});
+  }
+}
+
+class Samplers extends Node {
+  constructor() {
+    super();
+
+    this.samples = new Samples();
+    this.notInLove = this.createSampler('notinlove.mp3', {
+      a: 10,
+      b: 20
+    });
+  }
+
+  play = (sample) => {
+    this.notInLove.then(sampler =>
+      sampler.play(sample, 0, 0.5)
+    );
+  }
+
+  createSampler(fileName, offsets) {
+    return this.samples.buffers.then(buffers => {
+      const sampler = new SingleBufferSampler(buffers[fileName], offsets);
+      connect(sampler, this.output);
+      return sampler;
+    });
   }
 }
 
@@ -244,7 +294,14 @@ export default class Menagerie {
       release: 0.1
     }, [1, 1, 1, 1, 1]);
 
+    this.samplers = new Samplers();
+    connect(this.samplers, this.fxChain);
+
     connect(this.synth, this.fxChain, ctx.destination);
+  }
+
+  playSampler = (sample) => {
+    this.samplers.play(sample);
   }
 
   setPreset1 = () => {
