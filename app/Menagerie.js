@@ -249,7 +249,7 @@ const loadBuffers = () => {
 
 // TODO: show loading spinner, only show SamplerControl after loaded
 // TODO: allow sampler to be held down for note on/off ?
-// TODO: each key should have multiple attributes (offset, length, gain, playbackrate)
+// TODO: each key should have multiple attributes (offset, length, gain, adsr?, playbackrate)
 class Samplers extends Node {
   constructor(buffers) {
     super();

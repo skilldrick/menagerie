@@ -11,6 +11,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import SamplerControl from './SamplerControl';
+import Footer from './Footer';
 
 import Menagerie from './Menagerie';
 
@@ -70,6 +71,8 @@ class App extends Component {
               disabled={!this.state.loaded}
             />
           </div>
+
+          <Footer />
         </div>
       </MuiThemeProvider>
     );
@@ -84,7 +87,9 @@ class App extends Component {
     };
 
     this.menagerie = new Menagerie();
+  }
 
+  componentDidMount() {
     this.menagerie.buffers.then(buffers =>
       this.setState({ loaded: true })
     );
