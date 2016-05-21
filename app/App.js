@@ -32,33 +32,43 @@ class App extends Component {
       <MuiThemeProvider muiTheme={muiTheme}>
         <div>
           <div>
-            <RaisedButton label="Play Note" onTouchTap={this.playNote} />
+            <RaisedButton
+              label="Play Note"
+              onTouchTap={this.playNote}
+              disabled={!this.state.loaded || this.state.playingCissy}
+            />
             <RaisedButton
               label="Play Cissy Strut"
               onTouchTap={this.playCissy}
-              disabled={this.state.playingCissy}
+              disabled={!this.state.loaded || this.state.playingCissy}
             />
             <RaisedButton
               label="Stop Cissy Strut"
               onTouchTap={this.stopCissy}
-              disabled={!this.state.playingCissy}
+              disabled={!this.state.loaded || !this.state.playingCissy}
             />
             <RaisedButton
               label="Preset 1"
               onTouchTap={this.menagerie.setPreset1}
+              disabled={!this.state.loaded}
             />
             <RaisedButton
               label="Preset 2"
               onTouchTap={this.menagerie.setPreset2}
+              disabled={!this.state.loaded}
             />
             <RaisedButton
               label="Preset 3"
               onTouchTap={this.menagerie.setPreset3}
+              disabled={!this.state.loaded}
             />
           </div>
 
           <div>
-            <SamplerControl playSample={this.menagerie.playSample} />
+            <SamplerControl
+              playSample={this.menagerie.playSample}
+              disabled={!this.state.loaded}
+            />
           </div>
         </div>
       </MuiThemeProvider>
@@ -69,10 +79,15 @@ class App extends Component {
     super(props);
 
     this.state = {
-      playingCissy: false
+      playingCissy: false,
+      loaded: false
     };
 
     this.menagerie = new Menagerie();
+
+    this.menagerie.buffers.then(buffers =>
+      this.setState({ loaded: true })
+    );
   }
 
   playNote = () => {

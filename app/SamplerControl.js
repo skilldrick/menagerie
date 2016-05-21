@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 
-
+import CircularProgress from 'material-ui/CircularProgress';
 
 export default class SamplerControl extends Component {
   samples = [
@@ -12,9 +12,28 @@ export default class SamplerControl extends Component {
   ]
 
   render() {
+    return this.props.disabled ?
+      this.renderDisabled() :
+      this.renderEnabled();
+  }
+
+  renderDisabled() {
+    return (<div style={{width: 425, height: 425, display: 'flex'}}>
+      <div style={{margin: 'auto'}}>
+        <CircularProgress />
+      </div>
+    </div>);
+  }
+
+  renderEnabled() {
     return (<div>
       {this.samples.map((row, i) =>
-        (<Row row={row} key={i} playSample={this.props.playSample} />)
+        (<Row
+          row={row}
+          key={i}
+          playSample={this.props.playSample}
+          disabled={this.props.disabled}
+        />)
       )}
     </div>);
   }
@@ -28,7 +47,12 @@ class Row extends Component {
   render() {
     return (<div style={this.style}>
       {this.props.row.map((keyName, i) =>
-        (<Pad keyName={keyName} key={i} playSample={this.props.playSample} />)
+        (<Pad
+          keyName={keyName}
+          key={i}
+          playSample={this.props.playSample}
+          disabled={this.props.disabled}
+        />)
       )}
     </div>);
   }
