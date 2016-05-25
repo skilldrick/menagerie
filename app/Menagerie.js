@@ -228,7 +228,9 @@ class Cissy {
   }
 
   stop() {
-    this.cissySource && this.cissySource.stop();
+    try {
+      this.cissySource && this.cissySource.stop();
+    } catch (e) {} // Safari throws an error
   }
 }
 
@@ -275,6 +277,12 @@ class Samplers extends Node {
     });
   }
 
+  playAtPosition = (position) => {
+    this.notInLove.then(sampler => {
+      sampler.playOffset(sampler.buffer.duration * position, 0, 0.2);
+    });
+  }
+
   createSampler(fileName, offsets) {
     return this.buffers.then(buffers => {
       const sampler = new SingleBufferSampler(buffers[fileName], offsets);
@@ -308,6 +316,10 @@ export default class Menagerie {
 
   playSample = (sample) => {
     this.samplers.play(sample);
+  }
+
+  playAtPosition = (position) => {
+    this.samplers.playAtPosition(position);
   }
 
   setPreset1 = () => {

@@ -6,13 +6,21 @@ import getCanvas from './getCanvas';
 
 export default class BufferViewer extends Component {
   render() {
-    return (<BufferCanvas buffer={this.props.buffer} />)
+    return (
+      <BufferCanvas
+        buffer={this.props.buffer}
+        select={this.props.select}
+      />
+    )
   }
 }
 
 class BufferCanvas extends Component {
   render() {
-    return (<canvas ref='canvas' />)
+    return (<canvas
+      ref='canvas'
+      onTouchTap={this.handleTouchTap}
+    />)
   }
 
   componentDidMount() {
@@ -23,9 +31,21 @@ class BufferCanvas extends Component {
     );
   }
 
+  // Not sure if this is the best way to accept props and not draw
   shouldComponentUpdate(props) {
     props.buffer && this.draw(props.buffer);
     return false;
+  }
+
+  handleTouchTap = (e) => {
+    const nativeEvent = e.nativeEvent;
+    const touches = nativeEvent.changedTouches; // Not sure why changedTouches and not touches
+    const clientX = touches ? touches[0].clientX : nativeEvent.clientX;
+
+    const body = document.body;
+    const html = document.documentElement;
+    const x = clientX + body.scrollLeft + html.scrollLeft - Math.floor(this.refs.canvas.offsetLeft);
+    this.props.select(x / this.props.width);
   }
 
   draw(buffer) {
@@ -34,10 +54,12 @@ class BufferCanvas extends Component {
     const halfHeight = this.props.height / 2;
 
     this.canvasCtx.clearRect(0, 0, this.props.width, this.props.height);
+    this.canvasCtx.shadowColor = "rgb(66, 165, 245)";
+    this.canvasCtx.shadowBlur = 3;
     this.canvasCtx.fillStyle = "#000";
 
     // Scale amplitudes then draw them
-    amplitudes.map(amp => amp * halfHeight).forEach((amp, i) => {
+    amplitudes.map(amp => amp * halfHeight + 1).forEach((amp, i) => {
       if (i % 2 == 0) { // only draw even lines
         this.canvasCtx.fillRect(i, halfHeight - amp, 1, amp * 2)
       }
@@ -45,8 +67,6 @@ class BufferCanvas extends Component {
   }
 
   getAmplitudes(buffer) {
-    console.log('start', getCurrentTime());
-
     const data = [buffer.getChannelData(0), buffer.getChannelData(1)];
 
     var amplitudes = [];
@@ -59,8 +79,6 @@ class BufferCanvas extends Component {
       const amplitude = Math.pow(Math.abs(val), 0.5);
       amplitudes.push(amplitude);
     }
-
-    console.log('end', getCurrentTime());
 
     return amplitudes;
   }

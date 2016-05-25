@@ -67,7 +67,10 @@ class App extends Component {
           </div>
 
           <div>
-            <BufferViewer buffer={this.state.buffer} />
+            <BufferViewer
+              buffer={this.state.buffer}
+              select={this.menagerie.playAtPosition}
+            />
           </div>
 
           <div>
