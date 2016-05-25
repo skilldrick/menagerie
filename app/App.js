@@ -11,6 +11,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import SamplerControl from './SamplerControl';
+import BufferViewer from './BufferViewer';
 import Footer from './Footer';
 
 import Menagerie from './Menagerie';
@@ -66,6 +67,10 @@ class App extends Component {
           </div>
 
           <div>
+            <BufferViewer buffer={this.state.buffer} />
+          </div>
+
+          <div>
             <SamplerControl
               playSample={this.menagerie.playSample}
               disabled={!this.state.loaded}
@@ -91,7 +96,10 @@ class App extends Component {
 
   componentDidMount() {
     this.menagerie.buffers.then(buffers =>
-      this.setState({ loaded: true })
+      this.setState({
+        loaded: true,
+        buffer: buffers.notInLove
+      })
     );
   }
 
