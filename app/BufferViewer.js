@@ -10,6 +10,8 @@ export default class BufferViewer extends Component {
       <BufferCanvas
         buffer={this.props.buffer}
         select={this.props.select}
+        width={this.props.width}
+        height={this.props.height}
       />
     )
   }

@@ -4,13 +4,13 @@ import { render } from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // material-ui components
-import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import { deepOrange500 } from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import SamplerControl from './SamplerControl';
+import SampleCard from './SampleCard';
 import BufferViewer from './BufferViewer';
 import Footer from './Footer';
 
@@ -70,12 +70,21 @@ class App extends Component {
             <BufferViewer
               buffer={this.state.buffer}
               select={(pos) => this.menagerie.playAtPosition(pos)}
+              width={430}
+              height={200}
+            />
+          </div>
+
+          <div>
+            <SampleCard
+              sample={this.state.currentSample}
+              width={430}
             />
           </div>
 
           <div>
             <SamplerControl
-              playSample={(sample) => this.menagerie.playSample(sample)}
+              playSample={this.playSample}
               disabled={!this.state.loaded}
             />
           </div>
@@ -93,7 +102,6 @@ class App extends Component {
       playingCissy: false,
       loaded: false
     };
-
   }
 
   componentDidMount() {
@@ -118,6 +126,16 @@ class App extends Component {
   stopCissy = () => {
     this.setState({ playingCissy: false });
     this.menagerie.stopCissy();
+  }
+
+  setCurrentSample = (sampleName) => {
+    // TODO: currentSample needs to be an object
+    this.setState({ currentSample: sampleName });
+  }
+
+  playSample = (sampleName) => {
+    this.setCurrentSample(sampleName);
+    this.menagerie.playSample(sampleName)
   }
 }
 

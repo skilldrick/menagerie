@@ -18,7 +18,7 @@ export default class SamplerControl extends Component {
   }
 
   renderDisabled() {
-    return (<div style={{width: 425, height: 425, display: 'flex'}}>
+    return (<div style={{width: 430, height: 430, display: 'flex'}}>
       <div style={{margin: 'auto'}}>
         <CircularProgress />
       </div>
@@ -69,7 +69,7 @@ class Pad extends Component {
     return {
       width: '100px',
       height: '100px',
-      margin: '4px',
+      margin: '0 10px 10px 0',
       display: 'table',
       float: 'left',
       cursor: 'pointer',
