@@ -129,8 +129,13 @@ class App extends Component {
   }
 
   setCurrentSample = (sampleName) => {
-    // TODO: currentSample needs to be an object
-    this.setState({ currentSample: sampleName });
+    const sample = {
+      name: sampleName,
+      // Sort out samplers
+      offset: this.menagerie.samplers.notInLove.offsetMap[sampleName]
+    };
+
+    this.setState({ currentSample: sample });
   }
 
   playSample = (sampleName) => {

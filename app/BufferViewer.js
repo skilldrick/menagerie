@@ -93,10 +93,4 @@ class BufferCanvas extends Component {
 
     return amplitudes;
   }
-
-  //TODO: pass these in
-  static defaultProps = {
-    width: 450,
-    height: 200
-  };
 }
