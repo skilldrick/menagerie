@@ -1,6 +1,6 @@
 import React, { Component, ReactDOM } from 'react';
 import _ from 'lodash';
-import {ctx, getCurrentTime} from 'sine/audio';
+import { ctx, getCurrentTime } from 'sine/audio';
 import getCanvas from './getCanvas';
 
 
