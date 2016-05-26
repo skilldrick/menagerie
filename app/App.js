@@ -14,7 +14,7 @@ import SamplerControl from './SamplerControl';
 import BufferViewer from './BufferViewer';
 import Footer from './Footer';
 
-import Menagerie from './Menagerie';
+import menageriePromise from './Menagerie';
 
 // Needed for onTouchTap
 // Can go away when react 1.0 release
@@ -51,17 +51,17 @@ class App extends Component {
             />
             <RaisedButton
               label="Preset 1"
-              onTouchTap={this.menagerie.setPreset1}
+              onTouchTap={() => this.menagerie.setPreset1()}
               disabled={!this.state.loaded}
             />
             <RaisedButton
               label="Preset 2"
-              onTouchTap={this.menagerie.setPreset2}
+              onTouchTap={() => this.menagerie.setPreset2()}
               disabled={!this.state.loaded}
             />
             <RaisedButton
               label="Preset 3"
-              onTouchTap={this.menagerie.setPreset3}
+              onTouchTap={() => this.menagerie.setPreset3()}
               disabled={!this.state.loaded}
             />
           </div>
@@ -69,13 +69,13 @@ class App extends Component {
           <div>
             <BufferViewer
               buffer={this.state.buffer}
-              select={this.menagerie.playAtPosition}
+              select={(pos) => this.menagerie.playAtPosition(pos)}
             />
           </div>
 
           <div>
             <SamplerControl
-              playSample={this.menagerie.playSample}
+              playSample={(sample) => this.menagerie.playSample(sample)}
               disabled={!this.state.loaded}
             />
           </div>
@@ -94,16 +94,16 @@ class App extends Component {
       loaded: false
     };
 
-    this.menagerie = new Menagerie();
   }
 
   componentDidMount() {
-    this.menagerie.buffers.then(buffers =>
+    menageriePromise.then(menagerie => {
+      this.menagerie = menagerie;
       this.setState({
         loaded: true,
-        buffer: buffers.notInLove
+        buffer: this.menagerie.buffers.notInLove
       })
-    );
+    });
   }
 
   playNote = () => {

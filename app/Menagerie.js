@@ -1,6 +1,6 @@
 import {HarmonicSynth} from 'sine/synth';
 import {ctx, getCurrentTime} from 'sine/audio';
-import {Distortion, FeedbackDelay} from 'sine/fx';
+import {Distortion, FeedbackDelay, Reverb} from 'sine/fx';
 import {connect} from 'sine/util';
 import {SingleBufferSampler} from 'sine/sampler';
 import getAudioBuffer from 'sine/ajax';
@@ -164,7 +164,7 @@ class Tremolo extends AM {
 }
 
 class FxChain extends Node {
-  constructor() {
+  constructor(buffers) {
     super();
 
     this.fx = {
@@ -173,6 +173,7 @@ class FxChain extends Node {
       tremolo: new Tremolo(5, 0.3),
       distortion: new Distortion(1.5),
       delay: new FeedbackDelay(),
+      reverb: new Reverb(0.3, buffers.impulse),
       compressor: createDynamicsCompressor(),
       am: new AM(2000, 1)
     };
@@ -207,24 +208,24 @@ class FxChain extends Node {
   }
 }
 
+
+
 class Cissy {
   constructor(fxChain, buffers) {
-    this.bufferPromise = buffers.then(b => b.cissyStrut);
+    this.buffer = buffers.cissyStrut;
     this.fxChain = fxChain;
   }
 
   play(onended) {
     this.stop();
 
-    this.bufferPromise.then(buffer => {
-      this.cissySource = createBufferSource(buffer);
-      connect(this.cissySource, this.fxChain);
-      this.cissySource.start();
+    this.cissySource = createBufferSource(this.buffer);
+    connect(this.cissySource, this.fxChain);
+    this.cissySource.start();
 
-      if (onended) {
-        this.cissySource.onended = onended;
-      }
-    });
+    if (onended) {
+      this.cissySource.onended = onended;
+    }
   }
 
   stop() {
@@ -236,10 +237,11 @@ class Cissy {
 
 const loadBuffers = () => {
   const fileNames = {
-    beatIt:      'beatit.mp3',
+    //beatIt:      'beatit.mp3',
     cissyStrut:  'cissy-strut-start.mp3',
-    eileen:      'eileen.mp3',
-    everyBreath: 'everybreath.mp3',
+    impulse:     'conic_echo_long_hall_short.mp3',
+    //eileen:      'eileen.mp3',
+    //everyBreath: 'everybreath.mp3',
     notInLove:   'notinlove.mp3'
   };
 
@@ -258,48 +260,38 @@ class Samplers extends Node {
 
     this.buffers = buffers;
 
-    this.notInLove = this.createSampler('notInLove', {
+    this.notInLove = this.createSampler(this.buffers.notInLove, {
       1: 0.5,   2: 2,    3: 3,      4: 3.5,
       Q: 4.98,  W: 5.5,  E: 10.03,  R: 10.55,
       A: 27.25, S: 30,   D: 31,     F: 31.8,
       Z: 33.55,  X: 34.2, C: 37.1,   V: 40.61
     });
-
-    this.notInLove.then(x => window.notInLove = x);
   }
 
 
   play = (sample) => {
-    this.notInLove.then(sampler => {
-      //sampler.play(sample, 0, 0.2, 0.8)
-      //sampler.play(sample, 0, 0.2, 1.2)
-      sampler.play(sample, 0, 0.2);
-    });
+    this.notInLove.play(sample, 0, 0.2);
   }
 
   playAtPosition = (position) => {
-    this.notInLove.then(sampler => {
-      sampler.playOffset(sampler.buffer.duration * position, 0, 0.2);
-    });
+    const offset = this.notInLove.buffer.duration * position;
+    this.notInLove.playOffset(offset, 0, 0.2);
   }
 
-  createSampler(fileName, offsets) {
-    return this.buffers.then(buffers => {
-      const sampler = new SingleBufferSampler(buffers[fileName], offsets);
-      connect(sampler, this.output);
-      return sampler;
-    });
+  createSampler(buffer, offsets) {
+    const sampler = new SingleBufferSampler(buffer, offsets);
+    connect(sampler, this.output);
+    return sampler;
   }
 }
 
-export default class Menagerie {
-  constructor() {
-    this.fxChain = new FxChain();
+class Menagerie {
+  constructor(buffers) {
+    this.buffers = buffers;
+    this.fxChain = new FxChain(buffers);
     this.setPreset1();
 
-    this.buffers = loadBuffers();
-
-    this.cissy = new Cissy(this.fxChain, this.buffers);
+    this.cissy = new Cissy(this.fxChain, buffers);
 
     this.synth = new HarmonicSynth({
       attack: 0.01,
@@ -308,7 +300,7 @@ export default class Menagerie {
       release: 0.1
     }, [1, 1, 1, 1, 1]);
 
-    this.samplers = new Samplers(this.buffers);
+    this.samplers = new Samplers(buffers);
     connect(this.samplers, this.fxChain);
 
     connect(this.synth, this.fxChain, ctx.destination);
@@ -337,12 +329,14 @@ export default class Menagerie {
       'tremolo',
       'distortion',
       'delay',
+      'reverb',
       'compressor'
     ]);
   }
 
   setPreset3 = () => {
     this.fxChain.connectNodes([
+      'reverb',
       'am',
       'multiplier',
       'chorus',
@@ -365,3 +359,7 @@ export default class Menagerie {
     this.synth.playNote(3, getCurrentTime(), 2, Math.random() * 10);
   }
 }
+
+export default loadBuffers().then((buffers) =>
+    new Menagerie(buffers)
+  );
