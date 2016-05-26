@@ -31,21 +31,30 @@ class BufferCanvas extends Component {
     );
   }
 
-  // Not sure if this is the best way to accept props and not draw
   shouldComponentUpdate(props) {
     props.buffer && this.draw(props.buffer);
     return false;
   }
 
   handleTouchTap = (e) => {
-    const nativeEvent = e.nativeEvent;
-    const touches = nativeEvent.changedTouches; // Not sure why changedTouches and not touches
-    const clientX = touches ? touches[0].clientX : nativeEvent.clientX;
+    const clientX = this.getClientX(e.nativeEvent);
+    const canvasLeft = this.getCanvasLeft();
 
+    const x = clientX + canvasLeft;
+
+    this.props.select(x / this.props.width);
+  }
+
+  getClientX = (nativeEvent) => {
+     // Not sure why changedTouches and not touches
+    const touches = nativeEvent.changedTouches;
+    return touches ? touches[0].clientX : nativeEvent.clientX;
+  }
+
+  getCanvasLeft = () => {
     const body = document.body;
     const html = document.documentElement;
-    const x = clientX + body.scrollLeft + html.scrollLeft - Math.floor(this.refs.canvas.offsetLeft);
-    this.props.select(x / this.props.width);
+    return body.scrollLeft + html.scrollLeft - this.refs.canvas.offsetLeft;
   }
 
   draw(buffer) {
