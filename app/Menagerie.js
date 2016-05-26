@@ -113,6 +113,7 @@ class Menagerie {
     this.samplers.playAtPosition(position);
   }
 
+  //TODO: allow fx settings to be modified via UI
   setPreset1 = () => {
     this.fxChain.connectNodes([
       'chorus',

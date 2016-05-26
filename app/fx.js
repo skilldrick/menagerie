@@ -202,4 +202,3 @@ export default class FxChain extends Node {
     );
   }
 }
-

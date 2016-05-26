@@ -86,6 +86,10 @@ class Pad extends Component {
     display: 'table-cell',
     textAlign: 'center',
     verticalAlign: 'middle',
+    WebkitUserSelect: 'none',
+    MozUserSelect: 'none',
+    MsUserSelect: 'none',
+    userSelect: 'none'
   }
 
   render() {
