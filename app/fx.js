@@ -51,14 +51,16 @@ class Warper extends Node {
 
     const lfoGain = createGain(amount / 1000);
 
+    /*
     const analyser = createTimeDomainAnalyser(2048, 100, (dataArray, avg) => {
       const x = Math.floor(2000 * avg) + 20;
-      //console.log(new Array(x).join(" ") + letter);
+      console.log(new Array(x).join(" ") + letter);
     });
+    */
 
     this.delay = createDelay(2, 0.001);
 
-    connect(lfo, lfoGain, analyser, this.delay.delayTime);
+    connect(lfo, lfoGain, /*analyser, */this.delay.delayTime);
     connect(this.input, this.delay, this.output);
   }
 }
