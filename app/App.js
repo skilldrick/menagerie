@@ -37,7 +37,7 @@ class App extends Component {
             <RaisedButton
               label="Play Note"
               onTouchTap={this.playNote}
-              disabled={!this.state.loaded || this.state.playingCissy}
+              disabled={!this.state.loaded}
             />
             <RaisedButton
               label="Play Cissy Strut"
