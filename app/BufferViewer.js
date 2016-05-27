@@ -12,6 +12,8 @@ export default class BufferViewer extends Component {
         select={this.props.select}
         width={this.props.width}
         height={this.props.height}
+        offset={this.props.offset}
+        length={this.props.length}
       />
     )
   }
@@ -66,11 +68,15 @@ class BufferCanvas extends Component {
   }
 
   draw(buffer) {
+    this.canvasCtx.clearRect(0, 0, this.props.width, this.props.height);
+
+    this.canvasCtx.fillStyle = "#aaa";
+    this.drawMarker();
+
     const amplitudes = this.getAmplitudes(buffer);
 
     const halfHeight = this.props.height / 2;
 
-    this.canvasCtx.clearRect(0, 0, this.props.width, this.props.height);
     this.canvasCtx.shadowColor = "rgb(66, 165, 245)";
     this.canvasCtx.shadowBlur = 3;
     this.canvasCtx.fillStyle = "#000";
@@ -81,6 +87,17 @@ class BufferCanvas extends Component {
         this.canvasCtx.fillRect(i, halfHeight - amp, 1, amp * 2)
       }
     });
+  }
+
+  convertSecondsToPixels(value) {
+    return (value / this.props.buffer.duration) * this.props.width;
+  }
+
+  drawMarker() {
+    const position = this.convertSecondsToPixels(this.props.offset);
+    const width = Math.max(1, this.convertSecondsToPixels(this.props.length));
+
+    this.canvasCtx.fillRect(position, 0, width, this.props.height);
   }
 
   getAmplitudes(buffer) {

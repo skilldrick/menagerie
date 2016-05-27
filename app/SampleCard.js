@@ -48,6 +48,8 @@ export default class SampleCard extends Component {
           <BufferViewer
             buffer={this.props.buffer}
             select={this.props.select}
+            offset={this.props.sample.offset}
+            length={this.props.sample.length}
             width={400}
             height={150}
           />
