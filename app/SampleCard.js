@@ -21,6 +21,30 @@ export default class SampleCard extends Component {
             onChange={this.offsetChanged}
           />
 
+          <Value
+            title="Length"
+            value={this.props.sample.length}
+            onChange={this.lengthChanged}
+          />
+
+          <Value
+            title="Rate"
+            value={this.props.sample.playbackRate}
+            onChange={this.playbackRateChanged}
+          />
+
+          <Value
+            title="Fade In"
+            value={this.props.sample.fadeIn}
+            onChange={this.fadeInChanged}
+          />
+
+          <Value
+            title="Fade Out"
+            value={this.props.sample.fadeOut}
+            onChange={this.fadeOutChanged}
+          />
+
           <BufferViewer
             buffer={this.props.buffer}
             select={this.props.select}
@@ -58,6 +82,26 @@ export default class SampleCard extends Component {
     this.props.updated();
   }
 
+  lengthChanged = (value) => {
+    this.props.sample.length = value;
+    this.props.updated();
+  }
+
+  playbackRateChanged = (value) => {
+    this.props.sample.playbackRate = value;
+    this.props.updated();
+  }
+
+  fadeInChanged = (value) => {
+    this.props.sample.fadeIn = value;
+    this.props.updated();
+  }
+
+  fadeOutChanged = (value) => {
+    this.props.sample.fadeOut = value;
+    this.props.updated();
+  }
+
   subtitle() {
     if (this.props.sample) {
       return "Selected sample: " + this.props.sample.name;
@@ -88,7 +132,7 @@ class Value extends Component {
   }
 
   onChange = (value) => {
-    this.props.onChange(value);
+    this.props.onChange(+value);
   }
 
   render() {
