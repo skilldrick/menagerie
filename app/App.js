@@ -11,7 +11,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import SamplerControl from './SamplerControl';
 import SampleCard from './SampleCard';
-import BufferViewer from './BufferViewer';
 import Footer from './Footer';
 
 import menageriePromise from './Menagerie';
@@ -67,17 +66,10 @@ class App extends Component {
           </div>
 
           <div>
-            <BufferViewer
-              buffer={this.state.buffer}
-              select={(pos) => this.menagerie.playAtPosition(pos)}
-              width={430}
-              height={200}
-            />
-          </div>
-
-          <div>
             <SampleCard
               sample={this.state.currentSample}
+              buffer={this.state.buffer}
+              select={(pos) => this.menagerie.playAtPosition(pos)}
               width={430}
             />
           </div>

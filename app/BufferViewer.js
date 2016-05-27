@@ -26,16 +26,22 @@ class BufferCanvas extends Component {
   }
 
   componentDidMount() {
+    this.setupCanvasAndDraw();
+  }
+
+  componentDidUpdate() {
+    this.setupCanvasAndDraw();
+  }
+
+
+  setupCanvasAndDraw() {
     this.canvasCtx = getCanvas(
       this.refs.canvas,
       this.props.width,
       this.props.height
     );
-  }
 
-  shouldComponentUpdate(props) {
-    props.buffer && this.draw(props.buffer);
-    return false;
+    this.props.buffer && this.draw(this.props.buffer);
   }
 
   handleTouchTap = (e) => {
@@ -79,10 +85,9 @@ class BufferCanvas extends Component {
 
   getAmplitudes(buffer) {
     const data = [buffer.getChannelData(0), buffer.getChannelData(1)];
-
-    var amplitudes = [];
-
     const samplesPerPixel = Math.floor(buffer.length / this.props.width);
+
+    const amplitudes = [];
 
     for (let i = 0; i < this.props.width; i++) {
       const sampleIndex = i * samplesPerPixel;
@@ -91,6 +96,11 @@ class BufferCanvas extends Component {
       amplitudes.push(amplitude);
     }
 
-    return amplitudes;
+    return this.normalizeAmplitudes(amplitudes);
+  }
+
+  normalizeAmplitudes(amplitudes) {
+    const maxAmplitude = amplitudes.reduce((a, b) => (b > a) ? b : a);
+    return amplitudes.map(a => a / maxAmplitude);
   }
 }

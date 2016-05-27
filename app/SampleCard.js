@@ -5,17 +5,28 @@ import { Card, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 
+import BufferViewer from './BufferViewer';
+import noUserSelect from './noUserSelect';
+
 export default class SampleCard extends Component {
   render() {
     let cardBody;
 
     if (this.props.sample) {
       cardBody =
-        <CardText expandable={true}>
+        <CardText expandable={true} style={noUserSelect}>
           <Value
             title="Offset"
             value={this.props.sample.offset}
           />
+
+          <BufferViewer
+            buffer={this.props.buffer}
+            select={this.props.select}
+            width={400}
+            height={150}
+          />
+
         </CardText>;
     } else {
       cardBody = ""
@@ -25,7 +36,7 @@ export default class SampleCard extends Component {
       <Card
         style={{
           maxWidth: this.props.width,
-          marginBottom: 20
+          margin: "20px 0"
         }}
       >
         <CardHeader
@@ -73,6 +84,7 @@ class Value extends Component {
         <div style={this.labelStyle}>
           {this.props.title}
         </div>
+
         <TextField
           type="number"
           name="Name"

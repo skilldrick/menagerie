@@ -3,6 +3,8 @@ import { render } from 'react-dom';
 
 import CircularProgress from 'material-ui/CircularProgress';
 
+import noUserSelect from './noUserSelect';
+
 export default class SamplerControl extends Component {
   samples = [
     ['1', '2', '3', '4'],
@@ -82,15 +84,11 @@ class Pad extends Component {
     }
   }
 
-  innerStyle = {
+  innerStyle = Object.assign({
     display: 'table-cell',
     textAlign: 'center',
-    verticalAlign: 'middle',
-    WebkitUserSelect: 'none',
-    MozUserSelect: 'none',
-    MsUserSelect: 'none',
-    userSelect: 'none'
-  }
+    verticalAlign: 'middle'
+  }, noUserSelect);
 
   render() {
     return (
