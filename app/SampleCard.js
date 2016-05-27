@@ -18,6 +18,7 @@ export default class SampleCard extends Component {
           <Value
             title="Offset"
             value={this.props.sample.offset}
+            onChange={this.props.sample.setOffset}
           />
 
           <BufferViewer
@@ -54,7 +55,7 @@ export default class SampleCard extends Component {
 
   subtitle() {
     if (this.props.sample) {
-      return this.props.sample.name;
+      return "Selected sample: " + this.props.sample.name;
     } else {
       return "No sample selected";
     }
@@ -74,8 +75,15 @@ class Value extends Component {
   inputStyle = {
     width: "70px",
     paddingTop: "5px",
-    verticalAlign: "top",
-    marginLeft: "20px"
+    verticalAlign: "top"
+  }
+
+  onTextFieldChange = (event) => {
+    this.onChange(event.target.value);
+  }
+
+  onChange = (value) => {
+    this.props.onChange(value);
   }
 
   render() {
@@ -89,9 +97,9 @@ class Value extends Component {
           type="number"
           name="Name"
           value={this.props.value}
-          onChange={(x) => console.log(x)}
+          onChange={this.onTextFieldChange}
           style={this.inputStyle}
-          step={0.001}
+          step={0.01}
         />
       </div>
     );

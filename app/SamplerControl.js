@@ -126,8 +126,11 @@ class Pad extends Component {
   isThisButton = event =>
     String.fromCharCode(event.which) === this.props.keyName;
 
+  isInputEvent = event =>
+    event.srcElement.nodeName == 'INPUT'
+
   handleKeydown = event => {
-    if (this.isThisButton(event)) {
+    if (this.isThisButton(event) && !this.isInputEvent(event)) {
       this.playSample();
     }
   }

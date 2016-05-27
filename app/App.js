@@ -69,7 +69,7 @@ class App extends Component {
             <SampleCard
               sample={this.state.currentSample}
               buffer={this.state.buffer}
-              select={(pos) => this.menagerie.playAtPosition(pos)}
+              select={this.playSampleAtPosition}
               width={430}
             />
           </div>
@@ -120,11 +120,16 @@ class App extends Component {
     this.menagerie.stopCissy();
   }
 
+  // TODO: clean up this mess
   setCurrentSample = (sampleName) => {
     const sample = {
       name: sampleName,
-      // Sort out samplers
-      offset: this.menagerie.sampler.offsetMap[sampleName]
+      offset: this.menagerie.sampler.offsetMap[sampleName],
+      setOffset: (offset) => {
+        this.menagerie.sampler.offsetMap[sampleName] = offset;
+        this.setCurrentSample(sampleName);
+        this.playSample(sampleName);
+      }
     };
 
     this.setState({ currentSample: sample });
@@ -133,6 +138,16 @@ class App extends Component {
   playSample = (sampleName) => {
     this.setCurrentSample(sampleName);
     this.menagerie.playSample(sampleName)
+  }
+
+  playSampleAtPosition = (position) => {
+    const offset = this.menagerie.sampler.buffer.duration * position;
+    this.state.currentSample.setOffset(this.round(offset, 2));
+  }
+
+  round = (value, decimalPlaces) => {
+    const multiplier = Math.pow(10, decimalPlaces);
+    return Math.floor(value * multiplier) / multiplier;
   }
 }
 
