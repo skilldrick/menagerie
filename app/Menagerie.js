@@ -53,10 +53,8 @@ const loadBuffers = () => {
 
 // TODO: allow sampler to be held down for note on/off ?
 // TODO: each key should have multiple attributes (offset, length, gain, adsr?, playbackrate)
-class Samplers extends Node {
+class Samplers {
   constructor(buffers) {
-    super();
-
     this.buffers = buffers;
 
     this.notInLove = this.createSampler(this.buffers.notInLove, {
@@ -67,20 +65,8 @@ class Samplers extends Node {
     });
   }
 
-
-  play = (sample) => {
-    this.notInLove.play(sample, 0, 0.2);
-  }
-
-  playAtPosition = (position) => {
-    const offset = this.notInLove.buffer.duration * position;
-    this.notInLove.playOffset(offset, 0, 0.2);
-  }
-
   createSampler(buffer, offsets) {
-    const sampler = new SingleBufferSampler(buffer, offsets);
-    connect(sampler, this.output);
-    return sampler;
+    return new SingleBufferSampler(buffer, offsets);
   }
 }
 
@@ -99,18 +85,21 @@ class Menagerie {
       release: 0.1
     }, [1, 1, 1, 1, 1]);
 
-    this.samplers = new Samplers(buffers);
-    connect(this.samplers, this.fxChain);
+    this.sampler = new Samplers(buffers).notInLove;
 
-    connect(this.synth, this.fxChain, ctx.destination);
+    connect(this.fxChain, ctx.destination);
+
+    connect(this.sampler, this.fxChain);
+    connect(this.synth, this.fxChain);
   }
 
   playSample = (sample) => {
-    this.samplers.play(sample);
+    this.sampler.play(sample, 0, 0.2);
   }
 
   playAtPosition = (position) => {
-    this.samplers.playAtPosition(position);
+    const offset = this.sampler.buffer.duration * position;
+    this.sampler.playOffset(offset, 0, 0.2);
   }
 
   //TODO: allow fx settings to be modified via UI

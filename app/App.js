@@ -109,7 +109,7 @@ class App extends Component {
       this.menagerie = menagerie;
       this.setState({
         loaded: true,
-        buffer: this.menagerie.buffers.notInLove
+        buffer: this.menagerie.sampler.buffer
       })
     });
   }
@@ -132,7 +132,7 @@ class App extends Component {
     const sample = {
       name: sampleName,
       // Sort out samplers
-      offset: this.menagerie.samplers.notInLove.offsetMap[sampleName]
+      offset: this.menagerie.sampler.offsetMap[sampleName]
     };
 
     this.setState({ currentSample: sample });
