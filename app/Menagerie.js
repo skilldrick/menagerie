@@ -94,7 +94,7 @@ class Menagerie {
   }
 
   playSample = (sample) => {
-    this.sampler.play(sample, 0, 0.2);
+    this.sampler.play(sample, 0);
   }
 
   playAtPosition = (position) => {

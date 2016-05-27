@@ -18,7 +18,7 @@ export default class SampleCard extends Component {
           <Value
             title="Offset"
             value={this.props.sample.offset}
-            onChange={this.props.sample.setOffset}
+            onChange={this.offsetChanged}
           />
 
           <BufferViewer
@@ -51,6 +51,11 @@ export default class SampleCard extends Component {
 
       </Card>
     );
+  }
+
+  offsetChanged = (value) => {
+    this.props.sample.offset = value;
+    this.props.updated();
   }
 
   subtitle() {
