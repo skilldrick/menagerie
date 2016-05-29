@@ -64,10 +64,9 @@ export default class SampleCard extends Component {
 
     return (
       <Card
-        style={{
-          maxWidth: this.props.width,
-          margin: "20px 0"
-        }}
+        style={Object.assign({
+          width: this.props.width
+        }, this.props.style)}
       >
         <CardHeader
           title="Sample Properties"

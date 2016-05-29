@@ -28,7 +28,7 @@ export default class SamplerControl extends Component {
   }
 
   renderEnabled() {
-    return (<div>
+    return (<div style={this.props.style}>
       {this.samples.map((row, i) =>
         (<Row
           row={row}

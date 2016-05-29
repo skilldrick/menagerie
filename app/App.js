@@ -66,20 +66,20 @@ class App extends Component {
             />
           </div>
 
-          <div>
+          <div style={{display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start'}}>
+            <SamplerControl
+              playSample={this.playSample}
+              disabled={!this.state.loaded}
+              style={{flex: 'none', marginTop: 20, marginRight: 20}}
+            />
+
             <SampleCard
               sample={this.state.currentSample}
               buffer={this.state.buffer}
               select={this.playSampleAtPosition}
               updated={this.sampleUpdated}
+              style={{flex: 'none', marginTop: 20}}
               width={350}
-            />
-          </div>
-
-          <div>
-            <SamplerControl
-              playSample={this.playSample}
-              disabled={!this.state.loaded}
             />
           </div>
 
