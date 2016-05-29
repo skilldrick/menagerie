@@ -12,6 +12,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import SamplerControl from './SamplerControl';
 import SampleCard from './SampleCard';
 import Footer from './Footer';
+import { round } from './util';
 
 import menageriePromise from './Menagerie';
 
@@ -133,18 +134,13 @@ class App extends Component {
 
   playSampleAtPosition = (position) => {
     const offset = this.menagerie.sampler.buffer.duration * position;
-    this.state.currentSample.offset = this.round(offset, 2);
+    this.state.currentSample.offset = round(offset, 2);
     this.sampleUpdated();
   }
 
   sampleUpdated = () => {
     this.setState({ currentSample: this.state.currentSample });
     this.playSample(this.state.currentSample.name);
-  }
-
-  round = (value, decimalPlaces) => {
-    const multiplier = Math.pow(10, decimalPlaces);
-    return Math.floor(value * multiplier) / multiplier;
   }
 }
 

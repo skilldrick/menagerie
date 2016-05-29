@@ -4,9 +4,12 @@ import { render } from 'react-dom';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
+import IconButton from 'material-ui/IconButton';
+import FontIcon from 'material-ui/FontIcon';
 
 import BufferViewer from './BufferViewer';
 import noUserSelect from './noUserSelect';
+import { round } from './util';
 
 export default class SampleCard extends Component {
   render() {
@@ -116,25 +119,58 @@ export default class SampleCard extends Component {
 class Value extends Component {
   labelStyle = {
     fontFamily: "Roboto",
-    verticalAlign: "middle",
+    verticalAlign: "top",
     display: "inline-block",
-    minWidth: "80px",
-    marginRight: "20px",
-    paddingTop: "20px"
+    minWidth: 80,
+    marginRight: 20,
+    marginTop: 22
   }
 
   inputStyle = {
-    width: "70px",
-    paddingTop: "5px",
+    width: 70,
+    paddingTop: 5,
     verticalAlign: "top"
   }
 
+  buttonStyle = {
+    paddingTop: 19
+  }
+
+  iconStyle = {
+    fontSize: 18
+  }
+
+  componentWillReceiveProps(props) {
+    // Only set new state if value hasn't changed.
+    // This is required for Safari, which won't allow
+    // you to type "0." otherwise
+    if (props.value != this.state.value) {
+      this.setState({ value: props.value });
+    }
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = { value: this.props.value };
+  }
+
   onTextFieldChange = (event) => {
-    this.onChange(event.target.value);
+    const newValue = event.target.value;
+    this.onChange(newValue);
   }
 
   onChange = (value) => {
-    this.props.onChange(+value);
+    const rounded = round(value, 2);
+    this.setState({ value: value });
+    this.props.onChange(rounded);
+  }
+
+  increaseValue = () => {
+    this.onChange(this.state.value + this.props.step);
+  }
+
+  decreaseValue = () => {
+    this.onChange(this.state.value - this.props.step);
   }
 
   render() {
@@ -146,13 +182,36 @@ class Value extends Component {
 
         <TextField
           type="number"
-          name="Name"
-          value={this.props.value}
+          name={this.props.title}
+          value={this.state.value}
           onChange={this.onTextFieldChange}
           style={this.inputStyle}
-          step={0.01}
+          step={this.props.step}
         />
+
+        <IconButton
+          tooltip="Increase"
+          style={this.buttonStyle}
+          iconStyle={this.iconStyle}
+          onTouchTap={this.increaseValue}
+        >
+          <FontIcon className="material-icons">add</FontIcon>
+        </IconButton>
+
+        <IconButton
+          tooltip="Decrease"
+          style={this.buttonStyle}
+          iconStyle={this.iconStyle}
+          onTouchTap={this.decreaseValue}
+        >
+          <FontIcon className="material-icons">remove</FontIcon>
+        </IconButton>
       </div>
     );
+    // Add + / - buttons
+  }
+
+  static defaultProps = {
+    step: 0.01
   }
 }
