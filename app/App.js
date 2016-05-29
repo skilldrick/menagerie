@@ -11,6 +11,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import SamplerControl from './SamplerControl';
 import SampleCard from './SampleCard';
+import FxControl from './FxControl';
 import Footer from './Footer';
 import { round } from './util';
 
@@ -35,11 +36,6 @@ class App extends Component {
         <div>
           <div>
             <RaisedButton
-              label="Play Note"
-              onTouchTap={this.playNote}
-              disabled={!this.state.loaded}
-            />
-            <RaisedButton
               label="Play Cissy Strut"
               onTouchTap={this.playCissy}
               disabled={!this.state.loaded || this.state.playingCissy}
@@ -49,21 +45,12 @@ class App extends Component {
               onTouchTap={this.stopCissy}
               disabled={!this.state.loaded || !this.state.playingCissy}
             />
-            <RaisedButton
-              label="Preset 1"
-              onTouchTap={() => this.menagerie.setPreset1()}
+
+            <FxControl
+              fxChain={this.menagerie && this.menagerie.fxChain}
               disabled={!this.state.loaded}
             />
-            <RaisedButton
-              label="Preset 2"
-              onTouchTap={() => this.menagerie.setPreset2()}
-              disabled={!this.state.loaded}
-            />
-            <RaisedButton
-              label="Preset 3"
-              onTouchTap={() => this.menagerie.setPreset3()}
-              disabled={!this.state.loaded}
-            />
+
           </div>
 
           <div style={{display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start'}}>
@@ -107,10 +94,6 @@ class App extends Component {
         buffer: this.menagerie.sampler.buffer
       })
     });
-  }
-
-  playNote = () => {
-    this.menagerie.playNote();
   }
 
   playCissy = () => {

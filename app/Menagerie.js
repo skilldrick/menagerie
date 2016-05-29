@@ -74,7 +74,6 @@ class Menagerie {
   constructor(buffers) {
     this.buffers = buffers;
     this.fxChain = new FxChain(buffers);
-    this.setPreset1();
 
     this.cissy = new Cissy(this.fxChain, buffers);
 
@@ -102,40 +101,6 @@ class Menagerie {
     this.sampler.playOffset(offset, 0, 0.2);
   }
 
-  //TODO: allow fx settings to be modified via UI
-  setPreset1 = () => {
-    this.fxChain.connectNodes([
-      'chorus',
-      'multiplier',
-      'tremolo',
-    ]);
-  }
-
-  setPreset2 = () => {
-    this.fxChain.connectNodes([
-      'chorus',
-      'multiplier',
-      'tremolo',
-      'distortion',
-      'delay',
-      'reverb',
-      'compressor'
-    ]);
-  }
-
-  setPreset3 = () => {
-    this.fxChain.connectNodes([
-      'reverb',
-      'am',
-      'multiplier',
-      'chorus',
-      'tremolo',
-      'compressor',
-      'delay',
-      'distortion',
-    ]);
-  }
-
   playCissy(onended) {
     this.cissy.play(onended);
   }
@@ -144,6 +109,7 @@ class Menagerie {
     this.cissy.stop();
   }
 
+  // not used
   playNote() {
     this.synth.playNote(3, getCurrentTime(), 2, Math.random() * 10);
   }
