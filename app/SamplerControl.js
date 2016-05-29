@@ -52,6 +52,7 @@ class Row extends Component {
         (<Pad
           keyName={keyName}
           key={i}
+          col={i}
           playSample={this.props.playSample}
           disabled={this.props.disabled}
         />)
@@ -68,10 +69,13 @@ class Pad extends Component {
   }
 
   style = () => {
+    const margin = 10;
+
     return {
-      width: '100px',
-      height: '100px',
-      margin: '0 10px 10px 0',
+      width: '80px',
+      height: '80px',
+      marginBottom: margin,
+      marginRight: (this.props.col == 3) ? 0 : margin,
       display: 'table',
       float: 'left',
       cursor: 'pointer',

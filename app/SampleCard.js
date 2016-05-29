@@ -53,7 +53,7 @@ export default class SampleCard extends Component {
             select={this.props.select}
             offset={this.props.sample.offset}
             length={this.props.sample.length}
-            width={400}
+            width={this.props.width - 32}
             height={150}
           />
 

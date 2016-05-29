@@ -72,7 +72,7 @@ class App extends Component {
               buffer={this.state.buffer}
               select={this.playSampleAtPosition}
               updated={this.sampleUpdated}
-              width={430}
+              width={350}
             />
           </div>
 
