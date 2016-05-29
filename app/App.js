@@ -71,6 +71,7 @@ class App extends Component {
               playSample={this.playSample}
               disabled={!this.state.loaded}
               style={{flex: 'none', marginTop: 20, marginRight: 20}}
+              width={350}
             />
 
             <SampleCard

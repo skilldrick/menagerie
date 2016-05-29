@@ -13,6 +13,12 @@ export default class SamplerControl extends Component {
     ['Z', 'X', 'C', 'V'],
   ]
 
+  disabledStyle = {
+    width: this.props.width + 20,
+    height: this.props.width,
+    display: 'flex'
+  }
+
   render() {
     return this.props.disabled ?
       this.renderDisabled() :
@@ -20,7 +26,7 @@ export default class SamplerControl extends Component {
   }
 
   renderDisabled() {
-    return (<div style={{width: 430, height: 430, display: 'flex'}}>
+    return (<div style={this.disabledStyle}>
       <div style={{margin: 'auto'}}>
         <CircularProgress />
       </div>
