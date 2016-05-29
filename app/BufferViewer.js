@@ -68,8 +68,6 @@ class BufferCanvas extends Component {
   }
 
   draw(buffer) {
-    this.canvasCtx.clearRect(0, 0, this.props.width, this.props.height);
-
     this.canvasCtx.fillStyle = "#aaa";
     this.drawMarker();
 
