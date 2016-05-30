@@ -166,7 +166,7 @@ export default class FxChain extends Node {
 
     this.fx = {
       chorus: new StereoChorus(0.5, 5),
-      multiplier: new Multiplier(0.4),
+      multiplier: new Multiplier(0.7),
       tremolo: new Tremolo(5, 0.3),
       distortion: new Distortion(1.5),
       delay: new FeedbackDelay(),

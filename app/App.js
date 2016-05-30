@@ -49,6 +49,7 @@ class App extends Component {
             <FxControl
               fxChain={this.menagerie && this.menagerie.fxChain}
               disabled={!this.state.loaded}
+              style={{margin: "20px 0"}}
             />
 
           </div>
