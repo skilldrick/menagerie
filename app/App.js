@@ -12,6 +12,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import SamplerControl from './SamplerControl';
 import SampleCard from './SampleCard';
 import FxControl from './FxControl';
+import PatternSelector from './PatternSelector';
 import Footer from './Footer';
 import { round } from './util';
 
@@ -34,25 +35,22 @@ class App extends Component {
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <div>
-          <div>
-            <RaisedButton
-              label="Play Cissy Strut"
-              onTouchTap={this.playCissy}
-              disabled={!this.state.loaded || this.state.playingCissy}
-            />
-            <RaisedButton
-              label="Stop Cissy Strut"
-              onTouchTap={this.stopCissy}
-              disabled={!this.state.loaded || !this.state.playingCissy}
-            />
+          <RaisedButton
+            label="Play Cissy Strut"
+            onTouchTap={this.playCissy}
+            disabled={!this.state.loaded || this.state.playingCissy}
+          />
+          <RaisedButton
+            label="Stop Cissy Strut"
+            onTouchTap={this.stopCissy}
+            disabled={!this.state.loaded || !this.state.playingCissy}
+          />
 
-            <FxControl
-              fxChain={this.menagerie && this.menagerie.fxChain}
-              disabled={!this.state.loaded}
-              style={{margin: "20px 0"}}
-            />
-
-          </div>
+          <FxControl
+            fxChain={this.menagerie && this.menagerie.fxChain}
+            disabled={!this.state.loaded}
+            style={{margin: "20px 0"}}
+          />
 
           <div style={{display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start'}}>
             <SamplerControl
@@ -71,6 +69,11 @@ class App extends Component {
               width={350}
             />
           </div>
+
+          <PatternSelector
+            loaded={this.state.loaded}
+            menagerie={this.menagerie}
+          />
 
           <Footer />
         </div>

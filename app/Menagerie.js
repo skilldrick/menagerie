@@ -9,6 +9,7 @@ import { createBufferSource } from 'sine/nodes';
 import { Node } from 'sine/util';
 
 import FxChain from './fx';
+import Pattern from './pattern';
 
 class Cissy {
   constructor(fxChain, buffers) {
@@ -86,6 +87,8 @@ class Menagerie {
 
     this.sampler = new Samplers(buffers).notInLove;
 
+    this.pattern = new Pattern(this.sampler);
+
     connect(this.fxChain, ctx.destination);
 
     connect(this.sampler, this.fxChain);
@@ -107,6 +110,22 @@ class Menagerie {
 
   stopCissy() {
     this.cissy.stop();
+  }
+
+  playPattern() {
+    this.pattern.play();
+  }
+
+  stopPattern() {
+    this.pattern.stop();
+  }
+
+  setPattern(id, add) {
+    if (add) {
+      this.pattern.patternIds.add(id);
+    } else {
+      this.pattern.patternIds.delete(id);
+    }
   }
 
   // not used

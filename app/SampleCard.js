@@ -207,7 +207,6 @@ class Value extends Component {
         </IconButton>
       </div>
     );
-    // Add + / - buttons
   }
 
   static defaultProps = {

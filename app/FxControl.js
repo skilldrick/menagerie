@@ -9,8 +9,8 @@ export default class FxControl extends Component {
     { name: "am",         label: "Amplitude Modulation" },
     { name: "multiplier", label: "Multiplier" },
     { name: "chorus",     label: "Chorus" },
-    { name: "tremolo",    label: "Tremolo" },
     { name: "compressor", label: "Compressor" },
+    { name: "tremolo",    label: "Tremolo" },
     { name: "delay",      label: "Delay" },
     { name: "distortion", label: "Distortion" }
   ]
