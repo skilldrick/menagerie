@@ -10,6 +10,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import CircularProgress from 'material-ui/CircularProgress';
 
+import SamplerSelector from './SamplerSelector';
 import SamplerControl from './SamplerControl';
 import SampleCard from './SampleCard';
 import FxControl from './FxControl';
@@ -63,26 +64,30 @@ class App extends Component {
           <RaisedButton
             label="Play Cissy Strut"
             onTouchTap={this.playCissy}
-            disabled={!this.state.loaded || this.state.playingCissy}
+            disabled={this.state.playingCissy}
           />
           <RaisedButton
             label="Stop Cissy Strut"
             onTouchTap={this.stopCissy}
-            disabled={!this.state.loaded || !this.state.playingCissy}
+            disabled={!this.state.playingCissy}
           />
 
           <h2 style={this.headingStyle}>Global FX</h2>
           <FxControl
             fxChain={this.menagerie.fxChain}
-            disabled={!this.state.loaded}
             style={{margin: "20px 0"}}
           />
 
           <h2 style={this.headingStyle}>Sampler</h2>
+
+          <SamplerSelector
+            initialValue={this.menagerie.currentSamplerName}
+            changeSampler={this.changeSampler}
+          />
+
           <div style={{display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start'}}>
             <SamplerControl
               playSample={this.playSample}
-              disabled={!this.state.loaded}
               style={{flex: 'none', marginRight: 20}}
               width={350}
             />
@@ -99,7 +104,6 @@ class App extends Component {
 
           <h2 style={this.headingStyle}>Patterns</h2>
           <PatternSelector
-            loaded={this.state.loaded}
             pattern={this.menagerie.pattern}
             playPattern={this.menagerie.playPattern}
             stopPattern={this.menagerie.stopPattern}
@@ -124,11 +128,24 @@ class App extends Component {
   componentDidMount() {
     menageriePromise.then(menagerie => {
       this.menagerie = menagerie;
+
       this.setState({
-        loaded: true,
-        buffer: this.menagerie.sampler.buffer
-      })
+        loaded: true
+      });
+
+      this.setNewSampler();
     });
+  }
+
+  setNewSampler = () => {
+    this.setState({
+      buffer: this.menagerie.sampler().buffer,
+      currentSample: null
+    });
+  }
+
+  changeSampler = (name) => {
+    this.menagerie.changeSampler(name, this.setNewSampler);
   }
 
   playCissy = () => {
@@ -142,7 +159,7 @@ class App extends Component {
   }
 
   setCurrentSample = (sampleName) => {
-    const sample = this.menagerie.sampler.sampleMap[sampleName];
+    const sample = this.menagerie.sampler().sampleMap[sampleName];
     this.setState({ currentSample: sample });
   }
 
@@ -152,7 +169,7 @@ class App extends Component {
   }
 
   playSampleAtPosition = (position) => {
-    const offset = this.menagerie.sampler.buffer.duration * position;
+    const offset = this.menagerie.sampler().buffer.duration * position;
     this.state.currentSample.offset = round(offset, 2);
     this.sampleUpdated();
   }

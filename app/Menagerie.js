@@ -12,8 +12,8 @@ import FxChain from './fx';
 import Pattern from './Pattern';
 
 class Cissy {
-  constructor(fxChain, buffers) {
-    this.buffer = buffers.cissyStrut;
+  constructor(fxChain, cissyBuffer) {
+    this.buffer = cissyBuffer;
     this.fxChain = fxChain;
   }
 
@@ -36,13 +36,10 @@ class Cissy {
   }
 }
 
-const loadBuffers = () => {
+const loadInitialBuffers = () => {
   const fileNames = {
-    //beatIt:      'beatit.mp3',
     cissyStrut:  'cissy-strut-start.mp3',
     impulse:     'conic_echo_long_hall_short.mp3',
-    //eileen:      'eileen.mp3',
-    //everyBreath: 'everybreath.mp3',
     notInLove:   'notinlove.mp3'
   };
 
@@ -53,12 +50,10 @@ const loadBuffers = () => {
 }
 
 // TODO: allow sampler to be held down for note on/off ?
-// TODO: each key should have multiple attributes (offset, length, gain, adsr?, playbackrate)
-class Samplers {
-  constructor(buffers) {
-    this.buffers = buffers;
 
-    this.notInLove = this.createSampler(this.buffers.notInLove, {
+const samplerFactories = {
+  notInLove: (buffer) => {
+    const sampler = new SingleBufferSampler(buffer, {
       1: 0.5,    2: 2,     3: 3,      4: 3.5,
       Q: 4.98,   W: 5.5,   E: 10.03,  R: 10.55,
       A: 27.25,  S: 30,    D: 31,     F: 31.8,
@@ -66,23 +61,41 @@ class Samplers {
     });
 
     // Override the quiter samples to be louder
-    this.notInLove.setGains({
+    sampler.setGains({
       1: 4,  2: 4,  3: 4,  4: 4,
       Q: 2,  W: 2,  E: 2,  R: 2
     });
-  }
 
-  createSampler(buffer, offsets) {
-    return new SingleBufferSampler(buffer, offsets);
-  }
-}
+    return sampler;
+  },
 
+  eileen: () => {
+    return getAudioBuffer('eileen.mp3').then(buffer => {
+      const sampler = new SingleBufferSampler(buffer, {
+        1: 0.5,    2: 2,     3: 3,      4: 3.5,
+        Q: 4.98,   W: 5.5,   E: 10.03,  R: 10.55,
+        A: 27.25,  S: 30,    D: 31,     F: 31.8,
+        Z: 33.55,  X: 34.2,  C: 37.1,   V: 40.61
+      });
+
+      console.log(sampler);
+
+      return sampler;
+    });
+  }
+};
+
+//TODO: make every track playable via cissy play/pause buttons
+
+//beatIt:      'beatit.mp3',
+//eileen:      'eileen.mp3',
+//everyBreath: 'everybreath.mp3',
 class Menagerie {
   constructor(buffers) {
-    this.buffers = buffers;
-    this.fxChain = new FxChain(buffers);
+    const { cissyStrut, impulse, notInLove } = buffers;
+    this.fxChain = new FxChain(impulse);
 
-    this.cissy = new Cissy(this.fxChain, buffers);
+    this.cissy = new Cissy(this.fxChain, cissyStrut);
 
     this.synth = new HarmonicSynth({
       attack: 0.01,
@@ -91,23 +104,48 @@ class Menagerie {
       release: 0.1
     }, [1, 1, 1, 1, 1]);
 
-    this.sampler = new Samplers(buffers).notInLove;
+    this.samplers = {
+      notInLove: samplerFactories.notInLove(notInLove)
+    };
 
-    this.pattern = new Pattern(this.sampler);
+    this.currentSamplerName = 'notInLove';
+
+    this.pattern = new Pattern(this.sampler());
 
     connect(this.fxChain, ctx.destination);
 
-    connect(this.sampler, this.fxChain);
+    connect(this.sampler(), this.fxChain);
     connect(this.synth, this.fxChain);
   }
 
+  sampler = () => {
+    return this.samplers[this.currentSamplerName];
+  }
+
+  changeSampler = (newSamplerName, cb) => {
+    //TODO: normalize this so samplers always returns a promise?
+    if (this.samplers[newSamplerName]) {
+      // If we already have the sampler loaded, return immediately
+      this.currentSamplerName = newSamplerName;
+      cb();
+    } else {
+      // Otherwise load the sampler
+      samplerFactories[newSamplerName]().then(sampler => {
+        this.samplers[newSamplerName] = sampler;
+        this.currentSamplerName = newSamplerName;
+        connect(this.sampler(), this.fxChain);
+        cb();
+      });
+    }
+  }
+
   playSample = (sample) => {
-    this.sampler.play(sample, 0);
+    this.sampler().play(sample, 0);
   }
 
   playAtPosition = (position) => {
-    const offset = this.sampler.buffer.duration * position;
-    this.sampler.playOffset(offset, 0, 0.2);
+    const offset = this.sampler().buffer.duration * position;
+    this.sampler().playOffset(offset, 0, 0.2);
   }
 
   playCissy(onended) {
@@ -140,6 +178,6 @@ class Menagerie {
   }
 }
 
-export default loadBuffers().then((buffers) =>
-    new Menagerie(buffers)
-  );
+export default loadInitialBuffers().then((buffers) =>
+  new Menagerie(buffers)
+);

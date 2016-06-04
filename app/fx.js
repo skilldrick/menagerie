@@ -161,7 +161,7 @@ class Tremolo extends AM {
 }
 
 export default class FxChain extends Node {
-  constructor(buffers) {
+  constructor(impulse) {
     super();
 
     this.fx = {
@@ -170,7 +170,7 @@ export default class FxChain extends Node {
       tremolo: new Tremolo(8, 0.8),
       distortion: new Distortion(1.5),
       delay: new FeedbackDelay(),
-      reverb: new Reverb(0.3, buffers.impulse),
+      reverb: new Reverb(0.3, impulse),
       compressor: createDynamicsCompressor(),
       am: new AM(2000, 1)
     };
