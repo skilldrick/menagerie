@@ -12,9 +12,7 @@ export default class PatternSelector extends Component {
   }
 
   render() {
-    const patternIds = this.props.menagerie ?
-      this.props.menagerie.pattern.patterns.map((pattern, i) => i) :
-      [];
+    const patternIds = this.props.menagerie.pattern.patterns.map((pattern, i) => i);
 
     const checkBoxes = patternIds.map(i =>
       (<Checkbox
@@ -22,10 +20,7 @@ export default class PatternSelector extends Component {
         key={i}
         style={this.checkboxStyle}
         labelStyle={{width: '100%'}}
-        defaultChecked={
-          this.props.menagerie &&
-          this.props.menagerie.pattern.patternIds.has(i)
-        }
+        defaultChecked={this.props.menagerie.pattern.patternIds.has(i)}
         onCheck={(e, isChecked) => this.props.menagerie.setPattern(i, isChecked)}
       />)
     );

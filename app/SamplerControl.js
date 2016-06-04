@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 
-import CircularProgress from 'material-ui/CircularProgress';
-
 import noUserSelect from './noUserSelect';
 
 export default class SamplerControl extends Component {
@@ -13,27 +11,7 @@ export default class SamplerControl extends Component {
     ['Z', 'X', 'C', 'V'],
   ]
 
-  disabledStyle = {
-    width: this.props.width + 20,
-    height: this.props.width,
-    display: 'flex'
-  }
-
   render() {
-    return this.props.disabled ?
-      this.renderDisabled() :
-      this.renderEnabled();
-  }
-
-  renderDisabled() {
-    return (<div style={this.disabledStyle}>
-      <div style={{margin: 'auto'}}>
-        <CircularProgress />
-      </div>
-    </div>);
-  }
-
-  renderEnabled() {
     return (<div style={this.props.style}>
       {this.samples.map((row, i) =>
         (<Row

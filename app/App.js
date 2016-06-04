@@ -8,6 +8,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { deepOrange500 } from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import CircularProgress from 'material-ui/CircularProgress';
 
 import SamplerControl from './SamplerControl';
 import SampleCard from './SampleCard';
@@ -31,7 +32,27 @@ const muiTheme = getMuiTheme({
 });
 
 class App extends Component {
+  disabledStyle = {
+    fontFamily: 'Roboto, sans-serif'
+  }
+
   render() {
+    return this.state.loaded ?
+      this.renderEnabled() :
+      this.renderDisabled();
+  }
+
+  renderDisabled() {
+    return (
+      <MuiThemeProvider muiTheme={muiTheme}>
+        <div style={this.disabledStyle}>
+          <p>Loading Audio ...</p>
+          <CircularProgress />
+        </div>
+      </MuiThemeProvider>);
+  }
+
+  renderEnabled() {
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <div>
@@ -47,7 +68,7 @@ class App extends Component {
           />
 
           <FxControl
-            fxChain={this.menagerie && this.menagerie.fxChain}
+            fxChain={this.menagerie.fxChain}
             disabled={!this.state.loaded}
             style={{margin: "20px 0"}}
           />
