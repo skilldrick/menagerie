@@ -93,7 +93,10 @@ class App extends Component {
 
           <PatternSelector
             loaded={this.state.loaded}
-            menagerie={this.menagerie}
+            pattern={this.menagerie.pattern}
+            playPattern={this.menagerie.playPattern}
+            stopPattern={this.menagerie.stopPattern}
+            setPattern={this.menagerie.setPattern}
           />
 
           <Footer />
