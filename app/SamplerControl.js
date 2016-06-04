@@ -18,7 +18,6 @@ export default class SamplerControl extends Component {
           row={row}
           key={i}
           playSample={this.props.playSample}
-          disabled={this.props.disabled}
         />)
       )}
     </div>);
@@ -38,7 +37,6 @@ class Row extends Component {
           key={i}
           col={i}
           playSample={this.props.playSample}
-          disabled={this.props.disabled}
         />)
       )}
     </div>);

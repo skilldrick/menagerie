@@ -30,12 +30,10 @@ export default class PatternSelector extends Component {
         <RaisedButton
           label="Play Pattern"
           onTouchTap={this.playPattern}
-          disabled={!this.props.loaded}
         />
         <RaisedButton
           label="Stop Pattern"
           onTouchTap={this.stopPattern}
-          disabled={!this.props.loaded}
         />
 
         <div style={{

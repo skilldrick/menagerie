@@ -17,7 +17,7 @@ export default class SampleCard extends Component {
 
     if (this.props.sample) {
       cardBody =
-        <CardText expandable={true} style={noUserSelect}>
+        <CardText style={noUserSelect}>
           <Value
             title="Offset"
             value={this.props.sample.offset}
@@ -77,8 +77,6 @@ export default class SampleCard extends Component {
         <CardHeader
           title="Sample Properties"
           subtitle={this.subtitle()}
-          actAsExpander={true}
-          showExpandableButton={true}
         />
 
         {cardBody}
