@@ -59,10 +59,16 @@ class Samplers {
     this.buffers = buffers;
 
     this.notInLove = this.createSampler(this.buffers.notInLove, {
-      1: 0.5,   2: 2,    3: 3,      4: 3.5,
-      Q: 4.98,  W: 5.5,  E: 10.03,  R: 10.55,
-      A: 27.25, S: 30,   D: 31,     F: 31.8,
-      Z: 33.55,  X: 34.2, C: 37.1,   V: 40.61
+      1: 0.5,    2: 2,     3: 3,      4: 3.5,
+      Q: 4.98,   W: 5.5,   E: 10.03,  R: 10.55,
+      A: 27.25,  S: 30,    D: 31,     F: 31.8,
+      Z: 33.55,  X: 34.2,  C: 37.1,   V: 40.61
+    });
+
+    // Override the quiter samples to be louder
+    this.notInLove.setGains({
+      1: 4,  2: 4,  3: 4,  4: 4,
+      Q: 2,  W: 2,  E: 2,  R: 2
     });
   }
 

@@ -31,6 +31,12 @@ export default class SampleCard extends Component {
           />
 
           <Value
+            title="Gain"
+            value={this.props.sample.gain}
+            onChange={this.gainChanged}
+          />
+
+          <Value
             title="Rate"
             value={this.props.sample.playbackRate}
             onChange={this.playbackRateChanged}
@@ -88,6 +94,11 @@ export default class SampleCard extends Component {
 
   lengthChanged = (value) => {
     this.props.sample.length = value;
+    this.props.updated();
+  }
+
+  gainChanged = (value) => {
+    this.props.sample.gain = value;
     this.props.updated();
   }
 
