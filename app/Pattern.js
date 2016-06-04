@@ -3,7 +3,7 @@ import Scheduler from 'sine/scheduler';
 export default class Pattern {
   patterns = [
   // |       |       |       |       |
-    "Q Q W QQ WQQW QWR R R ER E RERE ",
+    "Q Q W QQ WQQW W   R R ER E RE  E",
     "X XZX ZX ZXZC C X ZZXZZXZXZZC C ",
     "SASADASA"
     ]
@@ -18,7 +18,7 @@ export default class Pattern {
     });
 
     this.patterns.forEach((pattern, i) => {
-      this.scheduler.addLoop(pattern.length, this.mapPattern(pattern, i + 1));
+      this.scheduler.addLoop(pattern.length, this.mapPattern(pattern, i));
     });
 
     this.patternIds = new Set([1]);

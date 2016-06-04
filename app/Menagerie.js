@@ -9,7 +9,7 @@ import { createBufferSource } from 'sine/nodes';
 import { Node } from 'sine/util';
 
 import FxChain from './fx';
-import Pattern from './pattern';
+import Pattern from './Pattern';
 
 class Cissy {
   constructor(fxChain, buffers) {

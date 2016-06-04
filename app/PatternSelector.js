@@ -12,9 +12,13 @@ export default class PatternSelector extends Component {
   }
 
   render() {
-    const checkBoxes = [1, 2, 3].map(i =>
+    const patternIds = this.props.menagerie ?
+      this.props.menagerie.pattern.patterns.map((pattern, i) => i) :
+      [];
+
+    const checkBoxes = patternIds.map(i =>
       (<Checkbox
-        label={i}
+        label={String(i)}
         key={i}
         style={this.checkboxStyle}
         labelStyle={{width: '100%'}}
