@@ -36,6 +36,10 @@ class App extends Component {
     fontFamily: 'Roboto, sans-serif'
   }
 
+  headingStyle = {
+    fontFamily: 'Roboto, sans-serif'
+  }
+
   render() {
     return this.state.loaded ?
       this.renderEnabled() :
@@ -67,17 +71,19 @@ class App extends Component {
             disabled={!this.state.loaded || !this.state.playingCissy}
           />
 
+          <h2 style={this.headingStyle}>Global FX</h2>
           <FxControl
             fxChain={this.menagerie.fxChain}
             disabled={!this.state.loaded}
             style={{margin: "20px 0"}}
           />
 
+          <h2 style={this.headingStyle}>Sampler</h2>
           <div style={{display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start'}}>
             <SamplerControl
               playSample={this.playSample}
               disabled={!this.state.loaded}
-              style={{flex: 'none', marginTop: 20, marginRight: 20}}
+              style={{flex: 'none', marginRight: 20}}
               width={350}
             />
 
@@ -86,11 +92,12 @@ class App extends Component {
               buffer={this.state.buffer}
               select={this.playSampleAtPosition}
               updated={this.sampleUpdated}
-              style={{flex: 'none', marginTop: 20}}
+              style={{flex: 'none'}}
               width={350}
             />
           </div>
 
+          <h2 style={this.headingStyle}>Patterns</h2>
           <PatternSelector
             loaded={this.state.loaded}
             pattern={this.menagerie.pattern}
