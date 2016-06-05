@@ -11,36 +11,34 @@ import { Node } from 'sine/util';
 import FxChain from './fx';
 import Pattern from './Pattern';
 
-class Cissy {
-  constructor(fxChain, cissyBuffer) {
-    this.buffer = cissyBuffer;
-    this.fxChain = fxChain;
+class PlayWholeBuffer extends Node {
+  constructor(buffer) {
+    super();
+    this.buffer = buffer;
   }
 
   play(onended) {
     this.stop();
 
-    this.cissySource = createBufferSource(this.buffer);
-    connect(this.cissySource, this.fxChain);
-    this.cissySource.start();
+    this.source = createBufferSource(this.buffer);
+    connect(this.source, this.output);
+    this.source.start();
 
     if (onended) {
-      this.cissySource.onended = onended;
+      this.source.onended = onended;
     }
   }
 
   stop() {
     try {
-      this.cissySource && this.cissySource.stop();
+      this.source && this.source.stop();
     } catch (e) {} // Safari throws an error
   }
 }
 
 const loadInitialBuffers = () => {
   const fileNames = {
-    cissyStrut:  'cissy-strut-start.mp3',
-    impulse:     'conic_echo_long_hall_short.mp3',
-    notInLove:   'notinlove.mp3'
+    impulse: 'conic_echo_long_hall_short.mp3'
   };
 
   // Returns a Promise of an object of buffer names to buffers
@@ -51,39 +49,106 @@ const loadInitialBuffers = () => {
 
 // TODO: allow sampler to be held down for note on/off ?
 
-const samplerFactories = {
-  notInLove: (buffer) => {
-    const sampler = new SingleBufferSampler(buffer, {
-      1: 0.5,    2: 2,     3: 3,      4: 3.5,
-      Q: 4.98,   W: 5.5,   E: 10.03,  R: 10.55,
-      A: 27.25,  S: 30,    D: 31,     F: 31.8,
-      Z: 33.55,  X: 34.2,  C: 37.1,   V: 40.61
-    });
-
-    // Override the quiter samples to be louder
-    sampler.setGains({
-      1: 4,  2: 4,  3: 4,  4: 4,
-      Q: 2,  W: 2,  E: 2,  R: 2
-    });
-
-    return sampler;
-  },
-
-  eileen: () => {
-    return getAudioBuffer('eileen.mp3').then(buffer => {
-      const sampler = new SingleBufferSampler(buffer, {
+class SamplerManager extends Node {
+  definitions = {
+    notInLove: {
+      fileName: 'notinlove.mp3',
+      offsets: {
         1: 0.5,    2: 2,     3: 3,      4: 3.5,
         Q: 4.98,   W: 5.5,   E: 10.03,  R: 10.55,
         A: 27.25,  S: 30,    D: 31,     F: 31.8,
         Z: 33.55,  X: 34.2,  C: 37.1,   V: 40.61
-      });
+      },
+      gains: {
+        1: 4,  2: 4,  3: 4,  4: 4,
+        Q: 2,  W: 2,  E: 2,  R: 2
+      }
+    },
 
-      console.log(sampler);
+    eileen: {
+      fileName: 'eileen.mp3',
+      offsets: {
+        1: 0.5,    2: 2,     3: 3,      4: 3.5,
+        Q: 4.98,   W: 5.5,   E: 10.03,  R: 10.55,
+        A: 27.25,  S: 30,    D: 31,     F: 31.8,
+        Z: 33.55,  X: 34.2,  C: 37.1,   V: 40.61
+      }
+    },
 
+    cissy: {
+      fileName: 'cissy-strut-start.mp3',
+      offsets: {
+        1: 0.5,    2: 2,     3: 3,      4: 3.5,
+        Q: 4.98,   W: 5.5,   E: 10.03,  R: 10.55,
+        A: 27.25,  S: 30,    D: 31,     F: 31.8,
+        Z: 33.55,  X: 34.2,  C: 37.1,   V: 40.61
+      }
+    }
+  }
+
+  constructor() {
+    super();
+    this.samplers = {};
+  }
+
+  // Returns a promise of a sampler
+  loadSampler(samplerName) {
+    const definition = this.definitions[samplerName];
+
+    return getAudioBuffer(definition.fileName).then(buffer => {
+      const sampler = new SingleBufferSampler(buffer, definition.offsets);
+      sampler.setGains(definition.gains || {});
+      connect(sampler, this.output);
       return sampler;
     });
   }
-};
+
+  cachedLoadSampler(samplerName) {
+    if (this.samplers[samplerName]) {
+      return Promise.resolve(this.samplers[samplerName]);
+    } else {
+      return this.loadSampler(samplerName).then(sampler => {
+        this.samplers[samplerName] = sampler;
+        return sampler;
+      });
+    }
+  }
+
+  changeSampler = (newSamplerName) => {
+    return this.cachedLoadSampler(newSamplerName).then(sampler => {
+      this.currentSamplerName = newSamplerName;
+      this.setNewWholeBuffer(sampler.buffer);
+      return sampler;
+    });
+  }
+
+  current = () => {
+    if (!this.currentSamplerName) {
+      throw new Error("current() called before sampler loaded");
+    }
+    return this.samplers[this.currentSamplerName];
+  }
+
+  setNewWholeBuffer(buffer) {
+    if (this.wholeBuffer) {
+      this.wholeBuffer.stop();
+    }
+
+    this.wholeBuffer = new PlayWholeBuffer(buffer);
+    connect(this.wholeBuffer, this.output);
+  }
+
+  playFullSample = (onended) => {
+    if (!this.wholeBuffer) {
+      throw new Error("playFullSample called before sampler loaded");
+    }
+    this.wholeBuffer.play(onended);
+  }
+
+  stopFullSample = () => {
+    this.wholeBuffer.stop();
+  }
+}
 
 //TODO: make every track playable via cissy play/pause buttons
 
@@ -92,10 +157,8 @@ const samplerFactories = {
 //everyBreath: 'everybreath.mp3',
 class Menagerie {
   constructor(buffers) {
-    const { cissyStrut, impulse, notInLove } = buffers;
+    const { impulse } = buffers;
     this.fxChain = new FxChain(impulse);
-
-    this.cissy = new Cissy(this.fxChain, cissyStrut);
 
     this.synth = new HarmonicSynth({
       attack: 0.01,
@@ -104,56 +167,33 @@ class Menagerie {
       release: 0.1
     }, [1, 1, 1, 1, 1]);
 
-    this.samplers = {
-      notInLove: samplerFactories.notInLove(notInLove)
-    };
-
-    this.currentSamplerName = 'notInLove';
-
-    this.pattern = new Pattern(this.sampler());
+    this.samplerManager = new SamplerManager();
 
     connect(this.fxChain, ctx.destination);
 
-    connect(this.sampler(), this.fxChain);
+    connect(this.samplerManager, this.fxChain);
     connect(this.synth, this.fxChain);
   }
 
-  sampler = () => {
-    return this.samplers[this.currentSamplerName];
+  // init returns a promise containing this instance
+  init() {
+    return this.samplerManager.changeSampler('notInLove').then(notInLove => {
+      this.pattern = new Pattern(notInLove);
+      return this;
+    });
   }
 
-  changeSampler = (newSamplerName, cb) => {
-    //TODO: normalize this so samplers always returns a promise?
-    if (this.samplers[newSamplerName]) {
-      // If we already have the sampler loaded, return immediately
-      this.currentSamplerName = newSamplerName;
-      cb();
-    } else {
-      // Otherwise load the sampler
-      samplerFactories[newSamplerName]().then(sampler => {
-        this.samplers[newSamplerName] = sampler;
-        this.currentSamplerName = newSamplerName;
-        connect(this.sampler(), this.fxChain);
-        cb();
-      });
-    }
+  currentSampler () {
+    return this.samplerManager.current();
   }
 
   playSample = (sample) => {
-    this.sampler().play(sample, 0);
+    this.currentSampler().play(sample, 0);
   }
 
   playAtPosition = (position) => {
-    const offset = this.sampler().buffer.duration * position;
-    this.sampler().playOffset(offset, 0, 0.2);
-  }
-
-  playCissy(onended) {
-    this.cissy.play(onended);
-  }
-
-  stopCissy() {
-    this.cissy.stop();
+    const offset = this.currentSampler().buffer.duration * position;
+    this.currentSampler().playOffset(offset, 0, 0.2);
   }
 
   playPattern() {
@@ -178,6 +218,7 @@ class Menagerie {
   }
 }
 
-export default loadInitialBuffers().then((buffers) =>
-  new Menagerie(buffers)
-);
+export default loadInitialBuffers().then((buffers) => {
+  const menagerie = new Menagerie(buffers);
+  return menagerie.init();
+});
