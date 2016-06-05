@@ -75,6 +75,26 @@ class SamplerManager extends Node {
       }
     },
 
+    beatIt: {
+      fileName: 'beatit.mp3',
+      offsets: {
+        1: 0.5,    2: 2,     3: 3,      4: 3.5,
+        Q: 4.98,   W: 5.5,   E: 10.03,  R: 10.55,
+        A: 27.25,  S: 30,    D: 31,     F: 31.8,
+        Z: 33.55,  X: 34.2,  C: 37.1,   V: 40.61
+      }
+    },
+
+    everyBreath: {
+      fileName: 'everybreath.mp3',
+      offsets: {
+        1: 0.5,    2: 2,     3: 3,      4: 3.5,
+        Q: 4.98,   W: 5.5,   E: 10.03,  R: 10.55,
+        A: 27.25,  S: 30,    D: 31,     F: 31.8,
+        Z: 33.55,  X: 34.2,  C: 37.1,   V: 40.61
+      }
+    },
+
     cissy: {
       fileName: 'cissy-strut-start.mp3',
       offsets: {
@@ -150,11 +170,6 @@ class SamplerManager extends Node {
   }
 }
 
-//TODO: make every track playable via cissy play/pause buttons
-
-//beatIt:      'beatit.mp3',
-//eileen:      'eileen.mp3',
-//everyBreath: 'everybreath.mp3',
 class Menagerie {
   constructor(buffers) {
     const { impulse } = buffers;

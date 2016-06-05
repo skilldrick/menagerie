@@ -12,9 +12,11 @@ export default class SamplerSelector extends Component {
         value={this.state.value}
         onChange={this.handleChange}
       >
-        <MenuItem value={"notInLove"} primaryText="I'm Not In Love" />
-        <MenuItem value={"eileen"}    primaryText="Come on Eileen" />
-        <MenuItem value={"cissy"}     primaryText="Cissy Strut" />
+        <MenuItem value={"notInLove"}   primaryText="I'm Not In Love" />
+        <MenuItem value={"eileen"}      primaryText="Come on Eileen" />
+        <MenuItem value={"beatIt"}      primaryText="Beat It" />
+        <MenuItem value={"everyBreath"} primaryText="Every Breath You Take" />
+        <MenuItem value={"cissy"}       primaryText="Cissy Strut" />
       </SelectField>
     );
   }
