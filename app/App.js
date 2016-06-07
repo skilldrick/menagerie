@@ -9,6 +9,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import CircularProgress from 'material-ui/CircularProgress';
 
+import Keyboard from './Keyboard';
 import Sampler from './Sampler';
 import FxControl from './FxControl';
 import PatternSelector from './PatternSelector';
@@ -61,6 +62,13 @@ class App extends Component {
           <FxControl
             fxChain={this.menagerie.fxChain}
             style={{margin: "20px 0"}}
+          />
+
+          <h2 style={this.headingStyle}>Keyboard</h2>
+
+          <Keyboard
+            playNote={this.menagerie.playNote}
+            endNote={this.menagerie.endNote}
           />
 
           <h2 style={this.headingStyle}>Sampler</h2>

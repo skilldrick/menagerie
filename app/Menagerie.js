@@ -176,10 +176,10 @@ class Menagerie {
     this.fxChain = new FxChain(impulse);
 
     this.synth = new HarmonicSynth({
-      attack: 0.01,
+      attack: 0.02,
       decay: 0.1,
       sustain: 1,
-      release: 0.1
+      release: 0.5
     }, [1, 1, 1, 1, 1]);
 
     this.samplerManager = new SamplerManager();
@@ -227,9 +227,16 @@ class Menagerie {
     }
   }
 
-  // not used
-  playNote() {
-    this.synth.playNote(3, getCurrentTime(), 2, Math.random() * 10);
+  playNote = (note) => {
+    const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    console.log('play', note);
+    this.synth.playNote(keys.indexOf(note), getCurrentTime(), 10);
+  }
+
+  endNote = (note) => {
+    const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    console.log('stop', note);
+    this.synth.stopNote(keys.indexOf(note), getCurrentTime());
   }
 }
 
