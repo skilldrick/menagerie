@@ -228,14 +228,14 @@ class Menagerie {
   }
 
   playNote = (note) => {
-    const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-    console.log('play', note);
-    this.synth.playNote(keys.indexOf(note), getCurrentTime(), 10);
+    const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C2'];
+    //console.log('play', note);
+    this.synth.playNote(keys.indexOf(note), getCurrentTime(), 60);
   }
 
   endNote = (note) => {
-    const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-    console.log('stop', note);
+    const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C2'];
+    //console.log('stop', note);
     this.synth.stopNote(keys.indexOf(note), getCurrentTime());
   }
 }

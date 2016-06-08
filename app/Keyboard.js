@@ -17,7 +17,8 @@ export default class Keyboard extends Component {
     'A',
     'A#',
     'B',
-    'B#' // dummy
+    'B#', // dummy
+    'C2'
   ];
 
   render() {
@@ -62,7 +63,7 @@ export default class Keyboard extends Component {
 
 class KeyboardKey extends Component {
   render() {
-    const width = 60;
+    const width = 40;
     const blackWidth = width * 2 / 3;
     const height = 150;
 
@@ -106,17 +107,16 @@ class KeyboardKey extends Component {
       isDummy ? dummyStyle : {}
     );
 
+
     return (
       <a
         style={style}
-        //onTouchStart={this.noteStart}
-        //onTouchEnd={this.noteEnd}
-        //onMouseDown={('ontouchstart' in window) ? null : this.noteStart}
-        //onMouseUp={('ontouchstart' in window) ? null : this.noteEnd}
-        onMouseDown={this.mouseDown}
-        onMouseUp={this.mouseUp}
-        onMouseEnter={() => this.noteStart()}
-        onMouseLeave={() => this.noteEnd()}
+        onTouchStart={() => this.noteStart(true)}
+        onTouchEnd  ={() => this.noteEnd(true)}
+        onMouseDown ={('ontouchstart' in window) ? null : this.mouseDown}
+        onMouseUp   ={('ontouchstart' in window) ? null : this.mouseUp}
+        onMouseEnter={('ontouchstart' in window) ? null : () => this.noteStart()}
+        onMouseLeave={('ontouchstart' in window) ? null : () => this.noteEnd()}
       ></a>
     );
   }
@@ -136,6 +136,8 @@ class KeyboardKey extends Component {
     }
   }
 
+  // Maybe the mouseUp should move to a document handler?
+  // or is it ok as-is
   noteEnd = (force=false) => {
     if (this.props.down || force) {
       this.props.mouseUp();
