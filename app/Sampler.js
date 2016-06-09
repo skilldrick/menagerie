@@ -86,8 +86,9 @@ export default class Sampler extends Component {
   }
 
   playSample = (sampleName) => {
-    this.setCurrentSample(sampleName);
-    this.props.playSample(sampleName)
+    this.props.playSample(sampleName);
+    // Don't block simultaneous samples with canvas update
+    setTimeout(() => this.setCurrentSample(sampleName), 5);
   }
 
   playSampleAtPosition = (position) => {
