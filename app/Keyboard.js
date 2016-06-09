@@ -172,7 +172,7 @@ class KeyboardKey extends Component {
     event.srcElement.nodeName == 'INPUT'
 
   handleKeydown = event => {
-    if (this.isThisButton(event) && !this.isInputEvent(event)) {
+    if (this.isThisButton(event) && !this.isInputEvent(event) && !event.repeat) {
       this.noteStart(true);
     }
   }

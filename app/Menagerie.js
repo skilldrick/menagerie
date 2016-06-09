@@ -5,7 +5,7 @@ import { ctx, getCurrentTime } from 'sine/audio';
 import { connect } from 'sine/util';
 import { SingleBufferSampler } from 'sine/sampler';
 import getAudioBuffer from 'sine/ajax';
-import { createBufferSource } from 'sine/nodes';
+import { createBufferSource, createGain } from 'sine/nodes';
 import { Node } from 'sine/util';
 
 import FxChain from './fx';
@@ -176,18 +176,20 @@ class Menagerie {
     this.fxChain = new FxChain(impulse);
 
     this.synth = new HarmonicSynth({
-      attack: 0.02,
+      attack: 0.001,
       decay: 0.1,
-      sustain: 1,
-      release: 0.5
+      sustain: 0.4,
+      release: 0.2
     }, [1, 1, 1, 1, 1]);
+
+    const synthGain = createGain(0.5);
 
     this.samplerManager = new SamplerManager();
 
     connect(this.fxChain, ctx.destination);
 
     connect(this.samplerManager, this.fxChain);
-    connect(this.synth, this.fxChain);
+    connect(this.synth, synthGain, this.fxChain);
   }
 
   // init returns a promise containing this instance
@@ -228,18 +230,19 @@ class Menagerie {
   }
 
   keys = [
+    'A0', 'A#0', 'B0',
     'C', 'C#', 'D', 'D#', 'E',
     'F', 'F#', 'G', 'G#', 'A',
     'A#', 'B', 'C2'
   ]
 
   playNote = (note) => {
-    //console.log('play', note);
-    this.synth.playNote(this.keys.indexOf(note), getCurrentTime(), 60);
+    // Stop note in 30 seconds in case note gets stuck
+    const length = 30;
+    this.synth.playNote(this.keys.indexOf(note), getCurrentTime(), length);
   }
 
   endNote = (note) => {
-    //console.log('stop', note);
     this.synth.stopNote(this.keys.indexOf(note), getCurrentTime());
   }
 }
