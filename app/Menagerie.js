@@ -88,10 +88,14 @@ class SamplerManager extends Node {
     cissy: {
       fileName: 'cissy-strut-start.mp3',
       offsets: {
-        1: 0.5,    2: 2,     3: 3,      4: 3.5,
-        Q: 4.98,   W: 5.5,   E: 10.03,  R: 10.55,
-        A: 27.25,  S: 30,    D: 31,     F: 31.8,
-        Z: 33.55,  X: 34.2,  C: 37.1,   V: 40.61
+        1: 35.52,    2: 42.73,     3: 38.45,      4: 51.61,
+        Q: 50.24,   W: 1.4,   E: 8.5,  R: 3.68,
+        //A: 27.25,  S: 30,    D: 31,     F: 31.8,
+        //Z: 33.55,  X: 34.2,  C: 37.1,   V: 40.61
+      },
+      lengths: {
+        1: 1.333, 2: 0.5, 3: 0.166, 4: 0.166,
+        Q: 0.166, W: 1.2, E: 0.57, R: 0.2
       }
     }
   }
@@ -108,6 +112,7 @@ class SamplerManager extends Node {
     return getAudioBuffer(definition.fileName).then(buffer => {
       const sampler = new SingleBufferSampler(buffer, definition.offsets);
       sampler.setGains(definition.gains || {});
+      sampler.setLengths(definition.lengths || {});
       connect(sampler, this.output);
       return sampler;
     });
