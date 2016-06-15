@@ -12,7 +12,7 @@ export default class PatternSelector extends Component {
   }
 
   render() {
-    const patternIds = this.props.pattern.patterns.map((pattern, i) => i);
+    const patternIds = this.props.pattern.currentPatterns.map((pattern, i) => i);
 
     const checkBoxes = patternIds.map(i =>
       (<Checkbox

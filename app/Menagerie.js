@@ -189,8 +189,8 @@ class Menagerie {
 
   // init returns a promise containing this instance
   init() {
-    return this.samplerManager.changeSampler('notInLove').then(notInLove => {
-      this.pattern = new Pattern(notInLove);
+    return this.samplerManager.changeSampler('cissy').then(cissy => {
+      this.pattern = new Pattern('cissy', cissy);
       return this;
     });
   }
