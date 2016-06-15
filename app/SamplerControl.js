@@ -82,7 +82,7 @@ class Pad extends Component {
         style={this.style()}
         className="pad"
         onTouchStart={this.handleClick}
-        onMouseDown={('ontouchstart' in window) ? null : this.handleClick}
+        onMouseDown={window.ontouchstart ? null : this.handleClick}
       >
         <div style={this.innerStyle}>
           {this.props.keyName}

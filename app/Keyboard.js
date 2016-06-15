@@ -129,10 +129,10 @@ class KeyboardKey extends Component {
         style={style}
         onTouchStart={() => this.noteStart(true)}
         onTouchEnd  ={() => this.noteEnd(true)}
-        onMouseDown ={('ontouchstart' in window) ? null : this.mouseDown}
-        onMouseUp   ={('ontouchstart' in window) ? null : this.mouseUp}
-        onMouseEnter={('ontouchstart' in window) ? null : () => this.noteStart()}
-        onMouseLeave={('ontouchstart' in window) ? null : () => this.noteEnd()}
+        onMouseDown ={window.ontouchstart ? null : this.mouseDown}
+        onMouseUp   ={window.ontouchstart ? null : this.mouseUp}
+        onMouseEnter={window.ontouchstart ? null : () => this.noteStart()}
+        onMouseLeave={window.ontouchstart ? null : () => this.noteEnd()}
       >
         <span
           style={{position: 'absolute', bottom: 5, marginLeft: -5}}
