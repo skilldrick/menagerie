@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 
 import _ from 'lodash';
 
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
+import IconButton from 'material-ui/IconButton';
+import FontIcon from 'material-ui/FontIcon';
+
 import noUserSelect from './noUserSelect';
 
 export default class Keyboard extends Component {
@@ -42,10 +47,19 @@ export default class Keyboard extends Component {
     });
 
     return (
-      <div
-        style={{ position: 'relative' }}
-      >
-        {keyElements}
+      <div style={{display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start'}}>
+        <div
+          style={{ flex: 'none', position: 'relative' }}
+        >
+          {keyElements}
+        </div>
+
+        <KeyboardControls
+          initialValue="mellotron"
+          style={{ flex: 'none', marginLeft: 20 }}
+          changeSynth={this.props.changeSynth}
+          changeOctave={this.props.changeOctave}
+        />
       </div>
     );
   }
@@ -62,6 +76,106 @@ export default class Keyboard extends Component {
   constructor() {
     super();
     this.state = { down: false };
+  }
+}
+
+class KeyboardControls extends Component {
+  render() {
+    return (
+      <div style={this.props.style}>
+        <SelectField
+          value={this.state.value}
+          onChange={this.handleChange}
+        >
+          <MenuItem value={"harmonic"}  primaryText="Harmonic Synth" />
+          <MenuItem value={"fm"}        primaryText="FM Synth" />
+          <MenuItem value={"mellotron"} primaryText="Mellotron" />
+        </SelectField>
+
+        <Octave
+          value={0}
+          onChange={this.props.changeOctave}
+        />
+      </div>
+    );
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = { value: props.initialValue };
+  }
+
+  handleChange = (e, index, value) => {
+    this.props.changeSynth(value);
+    this.setState({ value: value });
+  }
+}
+
+class Octave extends Component {
+  labelStyle = {
+    fontFamily: "Roboto",
+    verticalAlign: "top",
+    display: "inline-block",
+    marginRight: 10,
+    marginTop: 18
+  }
+
+  buttonStyle = {
+    paddingTop: 19
+  }
+
+  iconStyle = {
+    fontSize: 18
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = { value: this.props.value };
+  }
+
+  onChange = (value) => {
+    this.setState({ value: value });
+    this.props.onChange(value);
+  }
+
+  increaseValue = () => {
+    this.onChange(this.state.value + 1);
+  }
+
+  decreaseValue = () => {
+    this.onChange(this.state.value - 1);
+  }
+
+  render() {
+    return (
+      <div style={{height: "50px"}}>
+        <div style={this.labelStyle}>
+          Octave:
+        </div>
+
+        <div
+          style={this.labelStyle}
+        >{this.state.value}</div>
+
+        <IconButton
+          tooltip="Increase"
+          style={this.buttonStyle}
+          iconStyle={this.iconStyle}
+          onTouchTap={this.increaseValue}
+        >
+          <FontIcon className="material-icons">add</FontIcon>
+        </IconButton>
+
+        <IconButton
+          tooltip="Decrease"
+          style={this.buttonStyle}
+          iconStyle={this.iconStyle}
+          onTouchTap={this.decreaseValue}
+        >
+          <FontIcon className="material-icons">remove</FontIcon>
+        </IconButton>
+      </div>
+    );
   }
 }
 

@@ -19,7 +19,7 @@
     "material-ui": "^0.15.0-alpha.1",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
-    "sine": "^0.3.1"
+    "sine": "^0.4.3"
   },
   "devDependencies": {
     "babel-core": "^6.4.5",

@@ -1,8 +1,8 @@
 import _ from 'lodash';
 
-import { HarmonicSynth } from 'sine/synth';
+import { Synth, HarmonicSynth, FmSynth, SamplerSynth } from 'sine/synth';
 import { ctx, getCurrentTime } from 'sine/audio';
-import { connect } from 'sine/util';
+import { connect, freqToNote } from 'sine/util';
 import { SingleBufferSampler } from 'sine/sampler';
 import getAudioBuffer from 'sine/ajax';
 import { createBufferSource, createGain } from 'sine/nodes';
@@ -36,15 +36,38 @@ class PlayWholeBuffer extends Node {
   }
 }
 
-const loadInitialBuffers = () => {
-  const fileNames = {
-    impulse: 'conic_echo_long_hall_short.mp3'
-  };
-
+const loadBuffers = (fileNames) => {
   // Returns a Promise of an object of buffer names to buffers
   return Promise.all(_.toPairs(fileNames).map(([name, fileName]) =>
     getAudioBuffer(fileName).then(buff => [name, buff])
   )).then(bufferArray => _.fromPairs(bufferArray));
+}
+
+const loadInitialBuffers = () => {
+  const fileNames = {
+    impulse: 'conic_echo_long_hall_short.mp3',
+  };
+
+  return loadBuffers(fileNames);
+}
+
+const loadMellotron = () => {
+  const noteNameToFileName = (noteName) => {
+    return "Woodwind2/" + noteName[0].toUpperCase() + noteName[1] + ".wav";
+  }
+
+  const noteNames = [
+    'g2', 'a2', 'b2',
+    'c3', 'd3', 'e3', 'f3', 'g3', 'a3', 'b3',
+    'c4', 'd4', 'e4', 'f4', 'g4', 'a4', 'b4',
+    'c5', 'd5', 'e5', 'f5'
+  ];
+
+  const fileNames = _.fromPairs(
+    noteNames.map(noteName => [noteName, noteNameToFileName(noteName)])
+  );
+
+  return loadBuffers(fileNames);
 }
 
 // TODO: allow sampler to be held down for note on/off ?
@@ -167,17 +190,38 @@ class SamplerManager extends Node {
   }
 }
 
+
 class Menagerie {
-  constructor(buffers) {
+  constructor(buffers, mellotronBuffers) {
     const { impulse } = buffers;
     this.fxChain = new FxChain(impulse);
 
-    this.synth = new HarmonicSynth({
-      attack: 0.001,
-      decay: 0.1,
-      sustain: 0.4,
-      release: 0.2
-    }, [1, 1, 1, 1, 1]);
+    this.synths = {
+      harmonic:
+        new HarmonicSynth({
+          attack: 0.001,
+          decay: 0.1,
+          sustain: 0.4,
+          release: 0.2
+        }, [1, 1, 1, 1, 1]),
+      fm:
+        new FmSynth({
+          attack: 0.001,
+          decay: 0.1,
+          sustain: 0.4,
+          release: 0.2
+        }),
+      mellotron:
+        new SamplerSynth({
+          attack: 0.1,
+          decay: 0.1,
+          sustain: 0.4,
+          release: 0.2
+        }, mellotronBuffers)
+      }
+
+    this.changeSynth("mellotron");
+    this.changeOctave(0);
 
     const synthGain = createGain(0.5);
 
@@ -186,7 +230,8 @@ class Menagerie {
     connect(this.fxChain, ctx.destination);
 
     connect(this.samplerManager, this.fxChain);
-    connect(this.synth, synthGain, this.fxChain);
+
+    _.forOwn(this.synths, synth => connect(synth, synthGain, this.fxChain));
   }
 
   // init returns a promise containing this instance
@@ -233,18 +278,36 @@ class Menagerie {
     'A#', 'B', 'C2'
   ]
 
-  playNote = (note) => {
-    // Stop note in 30 seconds in case note gets stuck
-    const length = 30;
-    this.synth.playNote(this.keys.indexOf(note), getCurrentTime(), length);
+  getNoteFromKeyName = (keyName) => {
+    return this.keys.indexOf(keyName) + (12 * (this.octave - 1));
   }
 
-  endNote = (note) => {
-    this.synth.stopNote(this.keys.indexOf(note), getCurrentTime());
+  playNote = (keyName) => {
+    // Stop note in 10 seconds in case note gets stuck
+    const length = 10;
+    const note = this.getNoteFromKeyName(keyName);
+    this.synth.stopNote(note, getCurrentTime());
+    this.synth.playNote(note, getCurrentTime(), length);
+  }
+
+  endNote = (keyName) => {
+    const note = this.getNoteFromKeyName(keyName);
+    this.synth.stopNote(note, getCurrentTime());
+  }
+
+  changeSynth = (synth) => {
+    this.synth = this.synths[synth];
+  }
+
+  changeOctave = (octave) => {
+    this.octave = octave;
   }
 }
 
-export default loadInitialBuffers().then((buffers) => {
-  const menagerie = new Menagerie(buffers);
+export default Promise.all([
+  loadInitialBuffers(),
+  loadMellotron()
+]).then(([buffers, mellotronBuffers]) => {
+  const menagerie = new Menagerie(buffers, mellotronBuffers);
   return menagerie.init();
 });

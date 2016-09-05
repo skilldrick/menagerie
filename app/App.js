@@ -69,6 +69,8 @@ class App extends Component {
           <Keyboard
             playNote={this.menagerie.playNote}
             endNote={this.menagerie.endNote}
+            changeSynth={this.menagerie.changeSynth}
+            changeOctave={this.menagerie.changeOctave}
           />
 
           <h2 style={this.headingStyle}>Sampler</h2>
